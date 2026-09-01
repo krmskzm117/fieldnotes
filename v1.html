@@ -89,19 +89,11 @@ a{color:inherit}
 .sheet{position:relative}
 .sketch{width:100%;height:auto;display:block}
 .sketch .coast path{fill:none;stroke:var(--graphite);stroke-opacity:.2;stroke-width:.9;stroke-linejoin:round;stroke-linecap:round}
-.sketch .pref path{fill:none;stroke:var(--graphite);stroke-opacity:.13;stroke-width:.7;stroke-linejoin:round;stroke-linecap:round}
-.sketch .preflbl{font-family:var(--mincho);font-size:12.5px;fill:var(--graphite);fill-opacity:.42;letter-spacing:.16em}
-.sketch .timelbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;fill:var(--ink);fill-opacity:.62;paint-order:stroke;stroke:var(--paper);stroke-width:3.2px;stroke-linejoin:round}
-.sheetlbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;color:var(--mute);margin:0 0 9px}
-.sheetlbl b{font-weight:400;color:var(--ink)}
-.sheets{display:block}
-.sheets .sheetwrap + .sheetwrap{margin-top:30px;padding-top:26px;border-top:1px dashed var(--rule)}
 .sketch .inset .land{fill:none;stroke:var(--graphite);stroke-opacity:.45;stroke-width:.7;stroke-linejoin:round}
 .sketch .inset .pad{fill:var(--paper);opacity:.94}
 .sketch .inset .edge{fill:none;stroke:var(--graphite);stroke-opacity:.4;stroke-width:1}
 .sketch .inset .here{fill:var(--mark);fill-opacity:.85}
 .sketch .inset .herering{fill:none;stroke:var(--mark);stroke-width:1.1;stroke-opacity:.7}
-.sketch .inset .herebox{fill:var(--mark);fill-opacity:.12;stroke:var(--mark);stroke-width:1.1;stroke-opacity:.75}
 .sketch .townlbl{font-family:var(--mincho);font-size:11.5px;fill:var(--ink);fill-opacity:.78;paint-order:stroke;stroke:var(--paper);stroke-width:3.2px;stroke-linejoin:round}
 .sketch .grat{stroke:var(--graphite);stroke-opacity:.16;fill:none;stroke-width:.8}
 .sketch .route{stroke:var(--graphite);fill:none;stroke-width:1.5;stroke-opacity:.7;stroke-linecap:round;stroke-linejoin:round}
@@ -234,9 +226,6 @@ html[lang="en"] .note:empty::before{content:"Notes for this hour"}
   .sketch .frame{stroke-width:2.15}
   .sketch .deco{stroke-width:1.95}
   .sketch .lbl{font-size:17.5px}
-  .sketch .pref path{stroke-width:1.35}
-  .sketch .preflbl{font-size:24px}
-  .sketch .timelbl{font-size:18.5px;stroke-width:6.2px}
   .sketch .daylbl{font-size:24.5px;stroke-width:6.8px}
   .sketch .num{font-size:21.5px}
   .sketch .ring{stroke-width:2.7}
@@ -607,11 +596,8 @@ const STR = {
       "線が移動した道すじ、矢印が進んだ向きです。丸は写真を撮った場所で、大きさは枚数。" +
       "点線は日をまたぐ移動、薄い線は実際の海岸線。" +
       (merged > 0 ? "近い場所どうしは" + stops + "か所を" + places + "か所にまとめています。" : "") +
-      "うすい線は県境。丸をクリックすると、その時間の写真まで移動します。",
+      "丸をクリックすると、その時間の写真まで移動します。",
     north: "北", japan: "日本",
-    sheetAll: "全体図", sheetCore: "よくいた場所",
-    around: t => t + "のあたり",
-    inPrefs: a => a.join("・"),
     toMap: "地図", killSet: "この時間を削除",
     times: n => "（" + n + "回に分けて）",
     gap: (d, k) => d + (k ? " ・ " + k + "先へ" : ""),
@@ -665,11 +651,8 @@ const STR = {
       "Circles are where photos were taken, sized by how many; the dashed line is an overnight move, " +
       "and the faint outline is the real coastline. " +
       (merged > 0 ? stops + " stops close together are drawn as " + places + " places. " : "") +
-      "The faintest lines are prefecture borders. Tap a circle to jump to the photos from that hour.",
+      "Tap a circle to jump to the photos from that hour.",
     north: "N", japan: "Japan",
-    sheetAll: "The whole trip", sheetCore: "Where the time went",
-    around: t => "around " + t,
-    inPrefs: a => a.join(", "),
     toMap: "Map", killSet: "Remove this hour",
     times: n => " (over " + n + " visits)",
     gap: (d, k) => d + (k ? " · " + k + " away" : ""),
@@ -962,12 +945,9 @@ function ringsOf(src, cache){
   });
   return cache.v;
 }
-const PREFB=["mqipAatoThDnDjEjAvCy@nG|C~QpCdQvHGjHyJaBsDvBmApCr@rCcCx@{BnHtEbGtO~CtDtDb@`I|B~BiBnFpDjIqAdGzGYvAmCfO[vEnCzNy@vCxE`Kf@vD_EtCKb@wD|MqGdDhArC~GbPrCvGaDjCv@tIeBpFeJtGOzLtD|SrTsDxGlM`C`BnFrLpHQfDhNnFiBrDvMlC}BjC`@|DvLlApCfDtGiCjLtAvDbJlN`GfE`InCScAzBsGi@_GzEsE}AiCfEmJj@wEdSlFjCfHiDlDjAzCpHvC?jC}CbEr@rMuBlDpB_@tAvHv@`QbNtGc@~HhG~IkDrHvChEkBdFrA`JyAfQaKrHvDeA|FjEd@bJbJpH_C_@sDdE_CpW~EfJcFdE`DnCdItD[fEwB`BwHlHgCnI@vA~A{AlA@|G`JpGt@tKzF~A`CmAxCvAOrBjF~AhCw@tTxK^xBtEf@V~CiCdBcLj@gAzAtOzYbC`A{@zFpG`JeAxEuDdBrAtFvC`BrAxHpNpJ","iratAulnU~Bf@jYmKiCsBs@sGqGsE]qEyKgEJuCcHyHaMJoA_I}LmF_A}HgNqBgEtC_LeEsKw@{DmEyR_FmB_GqQTyCw@qBaIoH?uHwDyDZwCmIeKiBgD|@qEsDaYk@kEeBoFcIo\\fCjAgFw@oFtBuCkAoB_GkF_IuBiD`@gE{DaFToNcDuGdC}VqCiD~BcPrBeTEeMvCoEzDyYr@gP~JsDm@_KlHt@tAaB`C_HlEuK~An@nDuDrDpAzEwC~FgIjBcBiBcNi@q@lIdBExBvDwEpIfCvADrBwDjEjDvBdAdFqMrFvEfAdBfDeDb]fBzK{GtMQ|HBvLzFrCgA`ChAt@sChCzBrCqClFeLzGqDjLfNnEdL?p@xAvEo@bGdG{AxDbAdAcErAh@zCgFbFc@|GfDf@GtE_BUqDxGzA`]yCbDxAbCMlGyFpIzFp@YrC`CBPvAxE@RpFbGlFpGjNaA|C`BfDg@zIhJ~LbQ@lF{HxFQzLvC_@vDxJeAtA`A","qlfrA{}hTVfFpKlExOdBxG~G|HnBdGk@xNxGz_@sF|HeDlAwAq@_AtGi@nJtBpF{B`BdBnHuDnAaEvBb@|CrErFFcAbCvAhAqGbDoMk@uAvEhJvDlArFjJnAsD|IzAhCti@zKl@fBoGjCbAtM}CEWfC}P|N}@vDpIhDM`AsKfBsEhL|C~IhGfCtMoC}DhC}GLoD|I|AjF|LpLmBtCnB|CaA`B{EhBHnBmMhE_Pv@{@hEgOaGkFfAqAoAuAbGoFlFvAbHeHbAyCoCwOoAy@|I~AvD}GbCHnB`G|CzDhS`Je@fEdBtKeAfClCpK_AhGn@dCjCrHHnC`C_@|FfLpLCbBoI`EeIfZkKrEqCvDdJ~ElIdAy@|FwHfEgDhFhA`CqGlD\\rDfKlGTfByCT[vCdLbG`BpFcIhB`AlGuDvE~FdKaC`HlD~BcDxIlBlCgHjFdLi@v@bAkA|N`BvDoBbAeCbJ`DxAxMcFrLHfCo@JaBxArA~@s@pAnCpFaB~HxO","}b~tA{|mWbGfFyElPbBjHgB|D@dD`CrBc@|GlBtJs@zHyD|B`BjI_BhBn@zCkGfFFpFmFdI`@rDrNhDbQmKdEbC`Hs@xItGkCtJzBdJkAzCkI`D}JHi@|AsIfBeCfFzY|U^jF`QjEwDlBqEdKsH^?~D}FpErAzCmArQpHzJ[jCrBlBo@vBrCjDlH@j@tG~Hl@fEvI|M`BV~FmEzBe@rE~AfHlFx@d@~GtD`BuEtJxTxHxFfIkD|EHzFnA|BhMtAmBlEpEbGcOvCbAhHyIjEvArE}IjD_ArDrE\\zAjDT~BuA|@fAtEyM|@I|M}SbEoBzCoFp@eDxEeF~@TfFtI`AtClE{AlDv@dCyMvDqD[qEfFfKtB~AlC~Dk@fDpHjIzGeLtGxGxB?tBqC`AlEhM}JpCiCcAeLnBwAtBbBzCsBvEhFlE_@zEdI|L~G~CeApBbAtDkEjITxE","ynrrA}vrTjC|GsDVgHxKqFEkKrGoG`AXvNgAdBmF{A_C`A_BvD|DdDaAvDcGj@]bHkH\\}AyEcR~C{GrGiKq@sElFEfEeGzCqETaFcDiG~@oSaIiB{FeGkBmCx@wNeAyU|I|AvDsAbCcQkBoFzAd@nFcBbC_G]}CdC}CmBmGzImM}ImDKaHuFoKoBKgBwCXcFqF{AZKuEwLhAsM{DmAhClGbDElEtD`Bn@|CwApDuPtM?`La]kGcJx@OcBaDeAGwDwGKkG{CuBvAiI}@aD`BiEe@IlDo[fADfFcFpAiLy@eLeEkI|@gCiD}Gm@iGvAwFyIn@mFaGeEoMfAuEeLwVmDyBoDsDJaEyDoGu@eG`AqDqE^kDaGsB^aCgG{@uEiFeE@eItDoDe@M_H{OqGiBt@kFsAcFyP`DaD|D_@aBiHlJwBRgOwUkBe@iM","gu_qAumoT~E~@]lDrBlBdSrFtGlIrZtB~IoG|EbEzLfAvBdC|Pb@z@|F|IzB`Bi@p@cIzEcCPoB}EkPvBcCpG`AjC}C}CgAr@cC{CkDbGgF_@{DzNkC~HiKdF_@zAbBzEz@hDiAtC~Ah\\kEdD}B}AsE_FkDzAaCoAgEtIq@dJ|DjEwAdNnHrGKhA|EeArCxBzCnJDzJdFbOt@mApKlErAzErJxFLvGkAjJaXbNiCjGeFhBx@nFcFdJr@jReEtAxB~G\\rPsIzOGbOcDlCjC}@lCvHfIOtIlCjEl@vQhGpHrDe@|EjC~IoAhFxF_I~IwCxMz@nAhC?x@wC|He@zSvInCs@rF`CzN_BbCkDbDW`FhBt@dFiFjOyBpAK`JfDfCjNG|MtGlIsBhEfF","u`_sAs}dUoCnCiEXO|EuAv@b@pJsArAzBbDQrCzJtEhMnQ|DrBdC~GvBZLfCfEf@qBbLiIjCpApAoA|GlA|ClGzAfJjHbBfCsBnCfA|FdCfBeP`P}J|DwIKDnIrHfIe@bHzBlI`KbInR~FOpEhFvE`D|JbM`B`JlLl@vHpB`C~I|AxMcIx`@dGfIlG_AjJ`C`HtAdA~K]zEdPaFdJua@B{AzC|@dGeR`AqEdAqBtFgGgAcFrBMzFiK|JO~JaFlC@dE{VdMgEdHnC~FfEl@~GnPiNnMsQUm@vBrBlGaCjAcAhJoPrG_Bw@iNdNrCrHsCzMlGj@vN`L{L`IeCxJgEVa@hFpHpChPe@tH_Cu@dEkDLmFjEmBv[jGt@x@fCdPxGp@hHwAjB","iovrAk_gUjHnAbIkBzIhGWxA`CNjHzKpEb@~DbIfEv@{@vFbIEtKtFgAzBbGpKaE~@zBnABrDdHpFbIU~@jC}@l@lGdK`Jr@fH|FdJoBgHeRxI}Pr\\kLlNvJlCaDrBNyB}Bz@aFnDbFQrBdL[dCjAgBvG|HdR~LgAlFjC~@aOjBuAOeGu@wBcLoEvCuElB}RbIeGxCFt@yDSsCmDCsIyFxB}EwDqCt@eGkCcE@oBvCwBCaHcJaPsAeHdH_IdFSwAoGjC_EpAiTyHyD[uE}BQeAuE}F{EVyEdFwAi@gJjMqIyDiEwKKc@{D{IeBeEuGi@}DzC_GuEuGhBaJaFcIfAuEqEwErBsAYmBoDo@kFyGs@gDbCuC","qqetA_v~UrF^rKxG~JnAqBvCrDzF{BhEhApDuGbE_DzKBbQxAvA_G|HqFl@lBjHhJrEhZsF|DtBjPa@jExCrJqH~PhAzGtBdA|BaAfBxBtA\\lOpD~BxTkEdPrFjD{AxZzF~A{@lJpBxCiBpGpC`HeAtHhKQjF~E|BqHxJ{D[cEtBBnCaCpCvAhQxH~D}BzFhD~FbA~LnVtQdEpIUnCaQrPe@fEkDCqHkHkB`FsJnIZtEcEtD~Ir\\_ArMiEtD`@rEmEhHm@zF|EvFdBzHuFnOhDhDmBdCzAh@c@tH`DfCZzChDNmDzEgPuDmGtCeGcAmElDcMX","iokoAmb_SbIUbP~Cdl@iD`CRfLlKjS}AjPqHsDsOtHaEW_AbEi@lJkL`LbDvIFzHlIbL_@jZhDzCqB\\yIfCkBvEF`KkKxHsAdLwG?sE~Dj@~B_DvAeVjC{HcC{BjBeC{AiApBc@Y{AkDAoCsG~HgBI_G`NwLg@aCpDsQvMaNlCjAdFyDXmL~DmFaAsFpBqFfGsDBgBrO}FpB{FdEyBjEV|TeElLRzLbInNuAdEhOs@pFvBb@{H|FDhEkHvEmHdLjG~IkCzB~@~HvM|MzK?hGqMrL_DjF~@jIcGfCNrGsMzN_DlH`AtBmF","akftA{icUbBd@v@eBxGsA~E|Bp\\R~CwFxDhAnJqDpFxBlEq@lEpCjLe@WpAnD@dBoBmDcAnEmDlGN@iBdGg@VqElGaEq@mB`Ay@iFAjA}CpRuItNeL@qDhBuAaHkI}@}GeGaEu@eEaDs@sFuNqB~AaIqDWeDvBh@rBuFk@uBjEsAkAyGkJmIfA}F{@aGmLk@{LyQ~IoM~Fx@vCiAhJzBfLyCOnAzCr@nFcEnT}@nGqFrDGz@mQ{FgLn@sGoPgPkByNzGmBhBaGm@kEgLuEgAqKuEQsBeGuFiDzD{C","yproAs__TvAqDqF_PvFcNlQWlKrFjA|AO`HtJ`EvCrGwM~RZbH|EVzOtNCpFjGbDu@nC~ApChI{JpM}F|JxJxDgB`Cz@YrExHpBdU{Bt@jDlFGz@oCnKmDFyClLyEaBmC\\oDjFeFt@_IqHaJwBYsDuUfSp@|DiBxGnEbDqAlIrAtHgCdAeDgB}CfB{GyBsDbCiCdE|@Z}GxGaFYcCkV_MlBoBmAcArAqDeBwFoCJyGiG`CuBn@sRhFHlF{CqAsPhAmC~BOU}BlBqA{BsG","s}auAalvVcLj@qI}CeI`EuRBcCbDMbGjIdIbE`BvHk@f@dCiGbDwC}@@rD}BhA{FPn@pMcPhEmGwBcHxCqEpCW|FiDdDiLKdDeAyPcEQwG}G{KqCtAkBaBcKpAg@}NkEuAeJfIoJmBmJbBqD`FmGiAuAlEoI`AdBpGE|AyAIiDeA`@yCkIgAlBiDiA{GfC_BqNE_BuAdB_@rA{KcIsJhGcCf@yFqHmECeDiMiG{@{C`CaLgDiKpEgMqD_L}Nu@gBnEmZ}AuClDyOR}QvH","czxqAyy|SKzGgE`FcC]}@cCeOjHcBnMcChDp@xEhKxFxQoHdEOxF|CnCu@nG~GFlB{EfD|@tCjG|B~CvEYxCjRzDpFjSlLdDU|ApFjBeAbGhE~DwF`EcFn@gAvBmGT}E~D_DbHbDzFi@xBsPdAuDvJsBTgA`MbApIvJqAX`JjBAd@`B{AjClArFjEzAUpBsLzAmAhGnDzFwQ_B{GsF^iDiJKeCmBeWF{RhJkEoBgFr@aNwCgCuEuP|E{DYsDpD~@rBsBnD","ag~tAcbcVzCh@wAhFxB|AkChF|EnGwCvTvArCsApAzBvChLHfCmA~F|@jUuEHtFwPvGrC`Cb^gHtJfCnA{EdFcDtIs@pDoFvBoLsCiBwBgHhEuIAkB_DsAn@kBxPkFpHlBzIiAfFyH|MjDzNkIbAbFxRzB|DgAvBhBlPfAnJgJf@mKsCsDjGsBpG\\|@uBrE~@dE_AjHeC`@eEpDObG|D?~E`RsAMrBnCd@dIq@dAmBrF@v@_CbTqFlDfEgCvGv@jBoAlG","iv{sA{wbUvSpYDdEbChBm@bIeBjB~@bCdJtADdKnBl@fL}CbM~DpCpDlLmEhCzCLvFjF~EpG~BfHoBnJz@~SnGv@pBtH~A~IhQjV|CfJ{DrJtArEfNfFjFrHjBjBnLmPbSNhEzDjF@~CuBfBmYfAuG~DMfHkIvBgBvCiHaAmAbAcGeB_Fv@k@jCsEFcMzIyJaGuHjA}IuB{DlJqDhCmCc@q@fScHlIr@~FkDvG_GbByIxP_^rO}SvAaOzJ","klmsA{vpUMtDhLtMtGyBhF`@hL~GvBvGuDhEvElJwChEjDzF|F~AvAaAh@eInEeA|@uBxFtBjQuAzIbHbJd@nDdCt`@iB`TxKfDdGk@|BjCdC~HjAFuCfJY`BeDzNyDkI{HdAkJkHaJWaD`@gBtHc@d@wExLeCvLAnClDvDy@rB_DhPiCnOdEvNuBlBpDoDtA`ElFcCbG_EzA^lCvKjISpBdOfO?bEbDf@v@zCtOdFb@tC~DzBdKfC","kiluAmzsWk@nDlBhClYbO~KkAzE}EzCPxJyGjO|@|F{@|GzG`Da@rF|B|DiExHnNlDKxLnFr@wC~GiCm@cH~JyFvM|D|AvGpGxA|F_Bl@vChFPxLbGvC|FbLvC`Oi@bJfDzHPnArBrT`HmE|JvBjBhP|@hI|GjGV`NnIlYLtEkDnAeFlE}CdDLdCdCi@dF|UbC~HnLy@bDtS|KcEpFiGHOjB~HjMgCbDp@bCoCNZpIvGfGrBY","_x`oAq|eRqDeJmN_EoAyBd@yM~D{HoEiCqB{H~CsHjEeDWcL~MiH~NjFbL_@`WiRfCh@jJjNbD{JxK_Hd@qNaBqBtHwH}AaSr@gAxIx@nCiBrFGMiEgAqBoBd@k@aF~J{ClEz@vR_B~GqJxGlAjJwBtBmD[eGeAQnBaHoFqAF{FgCuI{C_CgF[dIu@rHmSlI}FtNoD`N\\pIsD_@sEbCyFxFcEdB{SjWeRpTaFCuJwFiD{AmH","irqpA}otSgHjFwIj@gC`CaWf@_DzEgPmByE\\e@zAgQUuEsCkEIgHrEoK|PaMdAeB~CiFz@qFwDgIZ{ByAgBkF^gGmDwBiP_BgD~IaVaCqA`DfAzEiGjELtD{DhBeA~Ct@nNuFtMbApDeBdDnFrKsi@aB}LjEoHo@{EpAM`D`CdB_CvDpAlAaGlDxTtLoBpAv@~AoA`CmKzAjBhEyGdD}@`GwClCj@lC}NuBkKbHm]iCiItBk@lB","u_~tAybvWzHVdOrInC`WdEMdC}C`NvBfEnFrJIH|MrEOhC{EpIc@hFn@BjD~KfCj@|AzQzAVsH~YoJRtBlRxAvApBuHfK~D`AjFgC`CVjDkDfDTKoDkBYd@{EbKv@pMwFvCsFjJaAvHrBlEuIiAsEhEuAbL~C|JyFtDrEjIe@dJlIG|DjD~F`Ov@rEaEfKBvFjBnIm@tQlFhEqC~HfAjDiDhTdDdH{AdQhAvGkMxNgE","ygxnAmpfSgCP{@jC{SxLmJDcMrCwDfBJ~AcKp@mGcBaGaJeB}KeDmBxBiHsFgDc@gEzMgC~O}IiDuFcH{BxSyCZkIkAqAqWcC|HkG{GcHlFkSy@k@dCcEhD?fCgCqO}JKyGsMq@c@yNwAe@DuMuBkDt@yCsRcFaIoP_K_DuEgFeQkCsG|@cHaEuBEcEvDkTzAcOq@mGpBsb@yA|C_EZyFsKqHiAwGvAeEbGmEA}FuFeO","_i|qAeapTmB_DqBhBhGdIdAjHnDpFk@nG`DlB{FdRaBbP{Dz@KrB`DhFgAvCp@rGfHfQ_BfB|CbH{@|HzJbDHfB}FrG`@~AaD\\SbEpHMyFfAmAbDtDhEsLKBhCuB@c@|AxAlDiO|M]`GvDhDI`I`DzBeAfFuS|KcGqFgPqDM|PgBlFmIYwDlCJtCiQcCyAf@z@lE}@zB}L~ADhCtFrBjAhG","giosAyafU^x@kQlA}@wFeHKaMxEaFB_HkH_[}BwOjDsEa@_F`EkAvFr@bIwCfElCfI_ApPjBdEoBdFjDhDzZ`IqBfFjAxImEjDJdFmEfH{E]c@tAa@tCtGrC}GvLVnAlRdCjE[nBaBK}BnBGdCtD_IjHsC|I{S^_A`E{C|A`Bj@qCdFl@lC`HrCqFdM[|J|FhLuQlFEvAgJFsDjK}M`C","qkoqAgunTzSmIuF_I`EqJ`KoAtDxAfKoBhJbDdDhFjHrDzE}ObKjAzOsD[wEzAeBrr@iObAqBgC_Gp@aCfDeA}BwGzAkE}CeGjAoGyDgHsGsC_GrAoFhEcHv@eBpE{PgDwE_IuJt@^aM}A{FvEgRtBiAmCuIbEeA_G}E`EmRhYlB~ThL~@}@pNvAjH_IsAoExAgC`T}JnJiMlDo@eFiESyG","}h_tAepvT|Eh@nAhCjOyAnJsJlDuMlGkAvJpCdEuBxCgI~GT|HgBdFfFp@lBaEbGdAbJkEdDtB~@gBxBhAlF|CxC_CtBc@vG~IvIe@`FpPnO`OzAxGk@h@lEfInJdWrCfEdEhBw@zGtAvLjGdE~Ew@lIpF~D`@tEiQP{MgBaNZcDzA~@hHqCjDQvGmB`ArAzCu@pFyCfDpDbIbBxMrJfF","w_gtAk~eVeJgIxBsDwAyCtJ_AoEoR_F{ClBwJi@{KrBqAj@kEkB_GiDsA{BaGnAcAcHiA}NxAgHjDkEmBgM~AiNyIw]gKgDqImCqAQaEqMwG@gFPsBfKkExAkG|DsD~IwEM{BfLk@tE{ExOpCxJsAtDcDxDh@bKwFvEcMzF`CxB}FoG_L}@qQzCyPmGsCTgApC}ChHU~DwCv_@oAtD{E","apxtAsemVkCcEm@sIkFuAkBfB{LuJjF_AjAwMbVaKlAyDgC}Ap@mAsA_CnGsAtA{EsEeBgByD`AwAoFiDvCsFZuG~EcAe@mF`DkAbHyKqD}HeI^cCdEyKvAqFgC_Mm\\hAkDy@eAjIeA?gJuGkEHoCiOgR`E}CzDdA|McEzCqJw@{MnBc@j@cDvRaFxBkFpG_BHuCqDcENyC","{ggtAofzTn\\|@|HdJ`@`GjTgFzGtFbP~FK{KrRfDsO{GOgDzBs@_EmFlB{AvFfGhSrHxIWdD`CjOdC`Xq@fGrBh@iAzDL@uFjEw@VoDvLyBtGxAlCaAtE}JW{DnGEZ{EbKyAhLdApMsA|AfAlKgErK|B`QsE~HkFjUg@fQkEdLVrVyMdGD`EdGnSb@hM|GVdG","qyrtAq{cVdHnLyBjLrBxAcBdKtArAa@fHfBhGeClEwQdIjI~DtBfIhEr@`QlSpSW~AeBvVmAvHnAtBhGlNbBdG_AtHwKbJ@vAeEzE{@T_DvSnInS^hDsBOwCtJsLg@kErAuDrIgCfAaC|AWlCnHfJW`LzBbRmIz\\|LbOwPtXhFvKcKhBaHzDa@jErCnH\\","c_erA}ecUuC~@}BtEiCP[vEyHlBxAhK{CrNgDlFuG|CyE}AsLl@sJ}AcBvHeEf@cIvIgDaAyCvA_D_@uMgLaJxF_a@_Cw@bCiXpJaFfK{U`IsCdMuHl@uXiHuM`@uHuBe@_GoDaCyHkU`Bq@l@iGtCiAgSiFyAqHmKyGb@mDuEkCoK_RjJoIxJ]|LoS","s`grAcmpTaGcITuF}EyKPmBnE`@QaJsNwDuCmEjSgQ_HoQrBgJrJiAjA{E|EuCkBwHiG{D|ByCUsD`I{@tEmO|EPrBrJvEjAbBWfAcGtCMxCdCzA}@eCqVp@gGdCsCmDwE`DiCzItB~D}@zDaImAkC`C{CmAcExQiHrBn@jEmDdCf@","mqsnA}_jSwFlC{FqJuCfAgIq@wBqMPia@zAcJdHkCtE}@\\hBxB}@rMvEdAo@rJlGEbB`IvAlAjH|DhAbEsA~CxB`AmCsCoCxJiJfJn@vCcDfH?nEkFrDCZgB|MgFnH_@~JqH~Jv@dBdBzJ}CjPq@pQtHbPcF`EhClRsCxD~Cvc@@","_hxqAafiTbKgBjDpCxGi@aEgE_D}JlBwFfLdBrCsDrGhByCtGtHj@tBjHoD[XlCoCyBwDh@C`HbDpB~R\\pAkEhK_Dr@kEtEs@tAbBxDI|DiDmAuAx@sEcC[hBqHeEsBpB{A~^aIjG|BbG{DbC~AnLiAlAkEoAoB`@aGnD{B","cd|qAy_pTnCnAbBs@~KcXdJiChEoIlIoA}AcFnG^|EyAzFdDzF}AdJfF|MyBtTqIrBz@dG{BzPu@fCtAhDcCp_@iBqA{F~BmE_BiBz@gEpIwB`DvAbC_CeByBt@cBfCU`BgEzHuBlF_HuFwKoBGhAeFgAuAlOqH?_CsEiLiO{D","iwbpAgcjS|JeNzM{BjCiK]iE|Jm@jAeDo@aFtDu@\\iC_A{HpJeDTiC_IqFiN}BkObDsK]iL~AcQsAsHnB{a@eHf@_EaLgLgAcHiLuFcAeCD_ItHsGsEgL{LuFvFuG{CoP{HoCaOm@cBuGl@cHyBaEaK_C~A{EkL{HbAwJeGoC","{plrAs_zTxD]~GzCxFqMjCxDpFh@_@tA|A`AdFStFaEvDv@nA`FpG~BzOMpKyDlF|FGdGtClFnLoNrId@lDuBdGzBlHi@v`@sKfKfDlErExJT|D`NcC|Bg@fG`CjDk@pC~Dt@l@nCzJpHA|BkChBjJrK","ko}nAm`sR~@|CdJ~EB|HhJhBtFoAdF~@rOwIzUpJjChGhBh@hJuCjJtFj[kC|HdBfDqCrDzBhBmEbIrClL{BpZ}PbAwH`Q_BrFcRvJLcBhEvGbLfXhBh@rFdKj@dFiBnIfCtHiBbAvKxJ|Al_@}B~H_PdOgL","ehjsActzTqMwTsBuJyDgDeC[{HfEcHtHyGeCwSqUyHaM{@wHmHaEc@gFkDoDml@tK}E~FdEzKcE`H}IjCiJE}CiHaGyEwJzCgNyAiMvCuAqBcFWiEhDcET|BnI_BjJsMfAkMsBwJxBcEaN{LyHcLF","wcbpAmmiStLlGjb@fHfL`T{@lCnAbGcBzF|CdBbPf@v@|J~ObQnFfCv@nDpDv@bXeV~Ca@z@_GdIlBxAfF{IpKpA~GyDn@uDnImI`CwBlICfLjFxGuK|Jl@hL{EbKhBdAiErK~CpE@dIhRvC{@vG","y~gpAmirS_GsEsDaO{EQaI|GyQ}CqCoBoFyRcDiBgIj@iI~F_ITmQgKmUfEuDkFaFy@eQjBiQ}@cQvCgDeCc@wFgDReD_C?gDcEoAoA{FaEaAoCCeBhC_LxCgGsFiHScInDoI{EkIV","_botA}{eU`B{AjIQs@fH`LjGz\\SWhDhFPpHqCxDjCNjIlJ`@vSzGt@vNyAd@nAdCzCr@lDaA_BwAp@eAbJQs@mFdCKj@`DzOnClE`IyBhIzDjElEzNne@xKjRpIlLiDRpD`G{ApBfC","kmarAkxuTnCfJoAlEjAdI~LkFvG~G`LeDd@tAlKLm@xB~F|ExDxKvIQhDvBfDkGrKyBjB}GrC?bExPbBf@nDbKb@`WdFt@`E~Dn@jIhOnDjE_CVuE|W]pBfPjIWUlB`GvClE|I","utoqAwt|SiB{KsIpCgQiHoI`AgFkBsDnJ{EkB[oDsKkB{Bn@n@qC}EkBBoBqCxAkXZsJ_BkA_DwHd@}DcDkUm@qHuFaA~BcGzBc@pGmBEiJ_HaPcDeMkIeJJ_C}AmFdAcC}CoRX","manrAgqqTzSne@z\\`a@gBxXvEzEIv`@~@TvGcPxD}Ad@jLtGsBzBhAlDcAhGqPhBLtFaF|@iDlKgD`BoHbEa@w@iFnD}@GiDpGkFlEx@bFdKnM}Ap@`BxBq@fBnA~@qAtN~KbE}FzHhF","wqftA{qeVe@`NvEf@rAhEcBzApB|EcCxBdBlEy@lBfApF~GdIkCbKt@hBwDpGkJdDGbDyMhIkToBoBbGsHhFmBjElKdDzXnTpGfJjDf@LzGvChFdC\\nJ`Kv@hDoBbFdJpAhDtH","usrqAcvjT?gJhHYxBqGsHcCG}AqLnBp@_EiDwBJeBiMiE_BaGjIkEoBaFnCkEiAaDb\\gCrBiDgAoBj`@jCtDgDqGkEx@}EnH_BhYEbAhFvLfBfGeFxBBw@aFbAkCkGiBnFaH","qh{pAakzSnGfBhDbEi@zKrIpHjPrAhHaClDfD|D`@dF_CdEhI~GrDMfC|Ha@hIzG`LGnAeDdEWnHoFIqCfC_Ck@eCzCU`E^~J|GjEaDbO~CpAeBbDTzFvD`Du@lFlBOrC","_gctAmcuTGyHpGyCyC{IuGy@jCrFaDfE_I_H~Y{SxEb@fAwAiH}FoFnBaGzGiDCt@yFiKqCmDuCi@oE{UfEqHvEkX|CgVzMcDBcJxPwL`DfBjFoB`BmUiDuIHoKhE","erxtAyopUtCbCaAvA~AdHmHnFZdDuGdIZhCzT~FxJXdEjEGjDzDjAn@~DrGvCvGDExD|NbJbNaQjD~@zIgHtUsBnF_\\rJMbMeDh@aHfQ{NtDg@rEbBlD}@","m|_oAqj|Rx@cEuCe@eA_EcGoE{@aFcDsAiFfDiFAl@aG}CsHT_EuEuFaIcDsB\\mMwHNuDuF_IlFgFwEoBWwFmDqBq@kG_BGw@_DoCl@mGoCmBfAqRQcCuA","mmasAyxkUmB~Bn@bCmB^g@xJbDvDUpJnErLqDzMj@jBbO^jVjN|@dN}N~@pCdEu@fC~EnCrIiAjD`Bp@dIzGbB}@lQbErAtClMxA~B`NlCjBvD_@zBbG~FdBA","{cnsAgrfUe@qSzByMqDoIb@eHcEqE^qDgIeHFyF`DiDwBeIq@wA{Fi@CuEkG_AoB{F\\eDwGwDsIv@{TiEwDkHfIuEi@qHwMeFqRaAgDrB_HkGkG`DuEoGim@mJ","sv_sA_qiTqFb@wGcFcCcH_FQrCyFcDaElCsDeIwReFgBeFcIcUmLs@oLeHnAeD{EbD{P_GpAsD{DXqEeDz@mCmAxCaCsAcE|LiHkGiBeBgHoCUDqC}DQ","mc_oA}puRcFyDkLkUfIcL|IuAhAsBoBkGrEgEmAiCfBgIbNInLcQpBsE@_OzDoIo@yNqH_BCcFhCgHuBiCmHUuAmPqDkBiUhDuKy@h@mCkG_EfAyL_AoF","iqvtAckiVyDhSrEdFd@nGxHtBxDpF{@tDdHz@lCtCa@xAbDnFaA~Iz@bB|G~DnMVk@dBrCjCbKUzEdBnQcBpEvArHiBnF|@aBlCjBxKaGlLzF`Gd@lEcBpC","{ixsAckoUuCgAe@cC_D]iGAeJ|CwCmAp@oQdEgED_]iTGiHuDgHzA{IoAiCwEeOiEuEcFNqNcCqGeOdFsDjLkGfCuAlDkLbDgD~ErAvIeBtDuNjDiG_B","akgrAmrnTrClJ{Ht@{QlMErDrDp@nE~JwFhC~CnCg@vQdCpA}BzHxMvIZrFm@rCcB@fCrJsAfFxCrAo@bH~FfFzCxIvCWjHvEWpJxBd@HhB","cf}pAkqiTpAlDcK`Ca@dDaE`AqElGtBbE`Fr@lEjF|@c@u@~DzCdB|AdL_Cl@w@tKeK{@eBv@HhByPzJw@~GbAnC{JpFhGnChDpMuErCf@tD","slksA}vpTuMvE_FsFoPuE}EL_H`FwCs@iHnJpBtDCpK_K~MyFt[kHOwI|K{QP_R|EcO{Q}Hm@rB}HaBcCfF_S`CgCuCiL~DyQkMsIfBcQ","e}htAqz_U}@e@oHlS_NhLTxWwFvG\\vCaD`CgGnPaLtHaMpSoEvPlErKf@hKkBv[tGvEiApDeIzGl@~I{JvJq@lEhErF|KlBHzMlA|EzDdB","c{kpAsnfT{CqC|@oIvHqBtB{EpIqAjBgLvCcAQeBbH_EbFqHj@eHsDqGx@_FuCaDpF{JwCsDb@kCgI_Fa@wKlBoDtEw@vG_L`NgIk@iB","wxkpAsxeTsA`CxDnGKrCwCdAeBrPsFfEP|CeJnBhCjK~ClDXjC}AhBhCpBBjD}EdFUnEkOzDeAfIaK|FqCjLfDdQiDO{@bC|DjK","yt_uA{ptW}A_ByDlAaLyAcGhAGjBtBnAa@pFuBrEx@bCsEjJjAx@oApFvGjFvFcCtB`AqBvD`E|HXlHnGjEKbDcGxBlF|M{DpE","ulvsA{gmUnAlFfHKzE~BtBfG|JY`ZgJtGrNvIL|CaPbHsAvAuDoHoDaF}JnHeGaEuF_A_MdFqEdNu@tLsHpFYnBoC_AsF`DwA","yiksAw}tTk@{LlHqEnBoK_B_Dz@oG`BUGaIzCaBoAaGlAuBbE^dGmKrF_DMoMtG{JgYoUcHoCnPiMvIiA|BgCs@qDeJyHj@iC","wu}sA{fcUmEEkAzBmFg@iKrGqMd@B{Ce]rGaGOaKeIyEFqJnDmIpIuM~Dq@dC{YrLch@g@id@wJeVpMoAcDaM_Ah@_GsEiAwAzC","khqtAilyVyOjD{NUwDaCiNbC{CfEeIxAaDaJmEeAoHrDuIZs@hHsErGeKvAsVKaKpKo@nKnAzBqFvNkJpBwFbDg@tCyEpA","mqipAatoTqM\\aUsEzE}MsC_F|GwIwBwAr@eN}FuIqCRk@iC{Be@vEcGuCcDHgHlF{K|UmHf^cUrM{Zo@wD}I}EiOw@","uhqtAi{yVtFc@tGrAhA|BlDaAhFdBjGeIvCp@`GgBf@_EzXuDzEwB{AiCnBoGQqKba@pEjEnC~@lE|[iFn@vAxWwBvUH","_qtqAafiT}GP`@vDhOQrKtEcC|@_BfGeGkB]dApGjW~FhCgBfKzCrFyCvH{IjEgArMeHhIQxJ`FS~@~H`WbL","iucrAi{wTfQuDjB_FzCy@pJ\\N`BxHG?bCzHhL}HxE}D`TaHnL}@jDzEtFkAfFbApBhAqBlK?zA{ApOqAG~B","cuaqAwxqTnHwEgEaR|AqA_AoEvIkFbMwBlB_LaAuEpE}LeAuB`A{BrGeB}DeLb@oPdF?`B{C_AkIdCyCxQoG^wB","msxqAgt}Sg@{IvFkPuFiGsF{@wAoDrEkBpAqEiGcDgD}JzAyAVcNgAcAjFaKyAeCJ}HxGqAt@eFbE}@mBcBg@qF","_yxrA_vfUh@zC_GxC}J{DcKo@eAsGgPoCsB`@E~JkDtDsb@lHgGgGqVf@kDxI}NbIqGn@kJmB_E~@BbJcC~@","cqxqAy_bTqH{D^wDmEaBhCqIbMk@XyB{C}AmBaU_HkPnB_N{PmK`B{LSoBsDPcAqCfAgIkBsDcDdCgDcA","s}vtAcn|TkCtDnWsKdEdF~LpCnQYnS~D|PzOdJ`DpXyDfU~J~TiCl]rJjE{@nNoP`QkEpJpCfGeFjYuL","kvtpA_vxSxAdBa@pBpKxAfHmEpCPxPjNxKhEtBxCb@zGxFhChDo@~KhBXqB~FqDdOVzFmFnGlBfHaF","wfwtAitvVsEmB{L?eIbN}Cz@qMgCyCkCuGFiDmCmNbEgRgGaHyKgOoByKiOgGmCaVc@kFsByQAg_@tS","{f}qAyieT{OwOyAbBbB`FwIn@sGyDcArCaHWcDbBgBrLmGl@_EgA{AnDaG`@q@wCiE_Cq@{GoGuA","goorA{i{TrFwLgAkGhEiJzG{DbGg@r@mB_EcJjXyEpAmC}AyAjAgMbM}AkD}Ut@gIcF_FmK{CfEsJ","etpsAwrqT`@cKwCyEnAeKgLoGyB_FgMeF{HtGcFbW}`@eB{ClByD|TkiA{J_Mp@aQeIgFF}EfDyYyJ","adtnA_ydSqH@_A{F}QwDlAqIoJkF_LVcHzBiN_BwH~AqCgOuBwAZgJ_FoCYmCeG`FElDmT{@","cr~pAoglTtDj@i@|HdCbCc@`JjDm@n@hBtCy@jIzBvBnGvEbC[hFkIfD`F|FwB`D@xF~JtH","idrnA{mhS{AsDf@eCsF}Bv@uHgFLl@fK}BrBoCURiGaK{DjFwBJkCiQkByAaEvFiEiEeC","ui_rA{ivSyBs@{@kDbIwMRyAuDS`@cCxGxC`BrEfEnBjR|DrIaBhTbUuB`KaFnAJrA","o_hnAysfSlCdAf@iBtP{DtAkBbIh@rKmEjEuO{BgE~@wDiA{FbM_HfMwPvDeB_JgY{GuC","wx|qAojtS?aF}CwB|EcEhE\\|@eEqE{IZwB}Fr@MvHkCvBhAbEgClBi@yFcD`Dp@xC","orvtAkhjVCoEiHu@sDkDtAgKaDUgAmE_IzA{D_FhCiSyEqDiFg@oCwFsEMkH{HhC_J","ahrsAyzoUlIZhCgDu@eEpDsAeBq\\|LwZjQFjF}D`PnApBtBzUPxMlGnVzElHdHgAnA","y`jnA{cdSfBiBe@sCdGuFlXiH|DkItEk@w@oHuHoCsEx@kBcDFoErCmBnAsF^gJ`]zA","aakpAkmlTlDTvKeE`DbA@lQtG~AzCfDtKcLpDE|FvEtFqB~[`CnCeC`KzDnB_E","{b_oAchtRyBfGcI|AkA|Dx@xJwCbG~FxCfOqCtEhAzGiBnCkDbK?lByA~KhIcAf@","csyqAangTqFpIwE`AeFtJtB~FpFnE_BnMyMxJ^fDyUv@kPbGeZlB_GyCyGxAoCmL","gqysA}_pTpE`HR~H{CzQmB`B@lFiLzI{F\\uCfFt@`EqAd@@pDid@~DiLW","glisAy_tTsB{EfNsByByJ~CgAeLeMhGqF}HeNwEEgFhDeBiAkIwRt@{MoHsF","sx`sAkzoUfBhAGlEeLnNEnVtAzA_KtIcBdGzApIqGdFfFtIuCpEdDpGAnO","{{`tAkhvTqV|Gi@nC{Cj@iKpNmQ~LbAhBiD`BwArHwI_@|CoC}DuDYwCzBoF","klprA}poU?oGiDoEaD_DcKsBqImKyLoBiKhF{CmCeB{HaJrB{SqBsGzC","}ebqAioqTfFfP}@jEcEjDlBtGuBjIvRpIlC~EdHvBg@pBzHI|FlDhSkF","kysoA}t|S]vBxB|D_GvH`@vKiBOaCzCoGwAShDwD{AgGbAcBmA^dA","sj_qA{mmTaNoBuHhB{BaFjCoC_CkF\\{DpPsCHaPaHuBsBkGtDuExDr@","iiloAwi`SwSv@cChFcR_DgEjEeNa@YpHzHfQmB`LpBdDy@jFcWiE","in~tA{jwVuTfAoAbEsIw@sMzE{T|TiBsB}DZaIyCkFhD{EXmEeB","{{ftAidbU}B[o@fCyDc@kCfFt@fIgBxJ}QlZe@~LmV`EyBc@WeC","cfjnAk|cS_KIK|CiIdDmIjJiHa@_GlGgYrBgGcAoBpDu`@pB","uuntAaluW|GTbClC`MvC|A`CeBjCnDpJtHkFdP|BpGcD`LvB","ox}pAqqzScGbE}CI}B_CsQ~AmAeFeEOaJ`GsCEo@jCuJe@","m|nrAoa{T~BxTbC`EhGJ^}CpEmAfM|DjIkC`H`IzPj@","yvmtAwj|TxMFjb@kRhCkEeBmHjVgFnHaFvBwJhg@ga@dIgT","yzxtAgh|TeKjEeM|Ue[zCgRjH_MxWaM~I}f@lV}Ln@}GoB","_f}rAspgTnT`Ga@|CdHhFsCdE\\hHbIpFr@pNaJr\\fCvP","_{itAmizTD~CmBpAoFsCqJbE}G}BsBdAbBrBy@zBaKQ","ctxrAmcgUt@~@xKaCjLpGnDyEbI`JjJ|BJzCzCo@tG_M","en}qAcorSgCGyFbGqEm@aApLiLlEoGIjBiCkCgBwSnG","}l{tAedoUzWeLbNmAZiAvIbAbMiCpLwLQ{CzC{EbF~@","yorqA{bjTbArDwHvFgLc@qEfHiHm@iDx@u@hCmMmB_F`E","urmqAma}SoDSrDjFc@`DoE|BWpDyHgAyBbB_H_FeDt@","ozroAauaT~AbCpRnCnBbJtE~E{Hn@uCbC^nFqEzF","}dsoA_o}SrAyH~H{FvGp@PwH}AiAm@aHrCw@aAsH","ubksAmfrTImDiFwCYyMpHmP{DkCeC}WoDcDhFmI","a~toAyn{SyBc@i@dAjFjJuAl@iA}@qDfBcUaD","wdrpAqivSzDi@t@oBkA{BdA{ClBHsEoKzBoD","ouhtAkdzTrBpErIdCIoCzAs@zDt@|UmG","e`grAo`oTzJaGJaCiEo@yCaDpBeScDwD","umxsAkknU~]vClA~BlJ`CfUmBsCzLnAfK","i~~nAwqtRtG}EdE^lBoG{FuD|@cKgI~@","wt~rA}chThFr@l@jGbDtDbUe@xDdE|Ck@","}tprAi~qT}PQaU}IcBaAu@eL_QaA|CdC","wkprAa|qTdGd@hRlItXwC_@_BlKYtHvF","sdftAckoV|IyA`HpA|L{IfIaA`GgE","sa`qAkizSmDhEcL{FzAsG_EuCYuI","{f|tAo`oUkB~AoEsBwDjBJnBgBk@","wqqnAifhS`FmAjAzAqDrEBjCbFzA","iemrAwslTwI|CmJjIkAhPaKzPh@z@","ibrpA_puS~F_BOaCaI}ElBaFiBoC","}~xqAyghTw@aC`DwFhOyDkAwCtD{F","ub~sAm{pUgEIeC`Eo@fBtBrB","yf`tAydpUeH{@oEhFuKs@sKvC","qbiqAmqvTsCyCr@mHnB}@c@wJ","sfqnA_xgShPzFQjIyF|Cu@`X","}rdrAkicUtBCbGmGo@{D|F{A","wu}qA_muSlM_BvA^s@zFtHg@","{zluAsjtWg@mAmIS}PyEcM}J","kqsoAc`}S\\cGoBcDvAgCfKrA","gmitA{izTaHi@{CgCkA~@pA~B","ejksAywpTvDmHeDkCpBqN`KyC","gmitA{izTfKg@fF}DnItCgE~F","kk|qAchtSoCnD|A|PiDbE_ItC","ynyqA{tgT~Dv@zAuKhDiAt@uD","klitAg_`UrEyCnDlBb@zC","wg}qAqttSV~CjK_@z@`E","wvnqAqp|Ss@jAqMw@wLyC","gh_sAkvhTuCuC}@iLwFsG","kb`tAamvTzHb@rFmC|FD","uw~qAm|uSD}Jo@_C{C_@","}a_qAmylToCwBtAyA{E{L","s_}pAupzSaGaBqIlCgEgA","ce_uAkdcV|ESz@kBfTfE","{``sAwspUfGc@lHwJhIwE","spftAmxbUbDk@hFmG{EsF","}y}qAk{uSeIBwK~EyEeG","sc|sA_kcUmFcH_CbBkPI","iixsAc}nUxBlE_DdAeBbH","ux~tAsotWyOmAsGvBuAqA","{{xrAgcgUcABSbExAl@","ak~rAoieU}NzAuD~G","e|~nA_puR}Ef@IeA","}wkpAm`fTqFeHjC_D","iwbpAgcjSvApMxOfF","ie~tAkztWwJoj@jP`B","{}~qAkmvSkFhFmCyB","_zjsA_zqTaBeGsDgC","y{xrAq{fUKnCdB`@","yuftAssbU~ACdAuC","itrqAaijTkA~@zEdC","utlrAy`mTyC\\yJbK","yp|qAystSArG{FT","yx{pA}mzSrF]rGxB","wt}qAqouSkHPtFtB","{zwtAu||TwSbHeJhJ","gcosAgjfUkBRMjD","}rkoAim_S_EaCgC{K","o|ftAmibUnB~B{Ab@","k`tnAm~cSaB|EnD`D","irvtAsbjVz@sAaAcB","yovtAwviVsBlDbAdE","yh_sAeohTrNbJlCB","o_|sAqdcUdAy@iEsC","wwwtAs~|TfLqI|MhT","mrsoAi||Si@cBjAU","g||qA{esS}GhB_HlR","kysoA}t|SzGqD}@y@","_{qnA}qhSi@nEyD]","ue`sAoppUyMSyD|I","k`tnAm~cS~H_OuLqI","{u{tAwcoU}BoAaLvD","sdorAq`{TaEy@qCoF","qyqpAoduScAhE~HpC","oykpAw|eTjBnBsAR","{b_qAcplTjBvDdGZ","_z}qAgxuSrDz@`@dC","gcosAgjfUvAd@|RuF","exxqAcf}SRmEzCW","ydjnAk_dSbBUZyB","an_rAkrfT{ErA","_x`oAq|eRx@zL","uplrAgbmTdD_C","}wmsAgeqUpJjM","_uftAk|eVfBnI","}}snAmrcSby@^","cbrnAklhSeAo@","c_erA}ecUdKmB","a`_oAcktRyA~A","mv}qAikuSTu@","em`tAukvTxIk@","}pkoAyi_Sr@jF","q{vtA{s|TaAvD","urmqAma}StAqA","m`}sAiqcUiTlI","ciqtAcyyVLeA","y}koAmf`SoJiB","w_gtAk~eVvI~@","i_bqAwvqTdI_A","cy|pAyqzSoEb@","ggluA_`tWcApD","e}koAg~_SSeG","agosAgdfUeAlA","muqnA{khStBpD","gfxsA_coUaBzD","yn|qAyntS_A_D","yjluAketWaOgD","{ixsAckoUrBbG","qyftAunbUvB}C","okgrA_xnTLpD","{pxpAkx`TbFB","sdorAq`{TdG]","oykpAw|eTp@uB","}x`tAkhvT}A?","i~qpA_iuS_C_F","uqqpAsytSStH","ynyqA{tgTiCxE","uqrqAutjT_Am@","ud|pA}lzSzJ_@","iz`sAefpUt@xJ","_l|pAgozScLqA","gpvtAy|iVL`E","{pxpAkx`TeA}C","o_|sAqdcUdHtK","efgrAy}nTiDxD","gl_uAoacVbF{A","qlnsAwpfUtGo@","e}~nAyktRc@}D","urxqAim}SW}E","ctxrAmcgUwFD","ik|qA}jtSoB{B","{zwtAu||TbB}@","{iwoAqlySUf@","ydjnAk_dSi@~A","wbbqAqpqTlBeE","ue`sAoppUxCgB","ejksAywpTmAZ","_vqnAsrhSPvE","qiqtA_pyVd@tB","ea_qAmwlTW_A","_srqAorjTi@lH","qiqtA_pyVLcH","o{qpAohuS|@~B","iw~pAoilTdD~@","m`grAi_oTFe@","i~qpA_iuSxAN","is}qAeruSm@rA","}ebqAioqTdBg@","ya_qAyqlTRsD","irvtAsbjV`AxD","gxxqAqz|S{@V","mg|pAenzSqCa@","e}~nAyktR{AT","{fwoAkmyS_BX","uiluAuatWc@uB","{r{tAoeoU|Dh@","ya_qAyqlTa@t@","_i|qAeapTzCj@","exxqAcf}SApJ","{u{tAwcoU~Aw@","gh_sAkvhTQdF","_vqnAsrhS_DT","uplrAgbmT_Cl@","gl_uAoacVsCsA","}y}qAk{uSAbB","mg|pAenzSvAf@","kk|qAchtS@yA","ikyoA{c~Sn@jA","uqrqAutjTi@dA","}rkoAim_S~@nB","ux~tAsotWjRwI","o|ftAmibU|AgD","em`tAukvTwJhB","{pprA}}qTbDz@","m`grAi_oTwDn@","{pprA}}qTaCK","ggluA_`tWmAu@"];
-const PREFL=[["三重県",136.378,34.519],["京都府",135.442,35.256],["佐賀県",130.116,33.287],["兵庫県",134.825,35.094],["北海道",142.571,43.383],["千葉県",140.201,35.517],["和歌山県",135.504,33.914],["埼玉県",139.345,36.0],["大分県",131.43,33.203],["大阪府",135.509,34.626],["奈良県",135.869,34.319],["宮城県",140.923,38.45],["宮崎県",131.299,32.196],["富山県",137.265,36.639],["山口県",131.554,34.211],["山形県",140.1,38.45],["山梨県",138.608,35.615],["岐阜県",137.054,35.781],["岡山県",133.812,34.906],["岩手県",141.359,39.596],["島根県",132.525,35.015],["広島県",132.788,34.627],["徳島県",134.239,33.921],["愛媛県",132.852,33.606],["愛知県",137.212,35.037],["新潟県",138.956,37.484],["東京都",139.434,35.715],["栃木県",139.816,36.693],["沖縄県",127.959,26.495],["滋賀県",136.135,35.219],["熊本県",130.831,32.647],["石川県",136.768,36.767],["神奈川県",139.335,35.417],["福井県",136.225,35.85],["福岡県",130.667,33.525],["福島県",140.222,37.382],["秋田県",140.405,39.752],["群馬県",138.982,36.507],["茨城県",140.316,36.31],["長崎県",129.93,32.944],["長野県",138.043,36.136],["青森県",140.828,40.783],["静岡県",138.327,35.02],["香川県",133.974,34.216],["高知県",133.368,33.426],["鳥取県",133.85,35.363],["鹿児島県",130.631,31.638]];
-const _coast = {}, _coastJp = {}, _prefb = {};
+const _coast = {}, _coastJp = {};
 const coastRings = () => ringsOf(COAST, _coast);
 const coastJpRings = () => ringsOf(COAST_JP, _coastJp);
-const prefRings = () => ringsOf(PREFB, _prefb);
 
 let _hk = null;
 const hkPolys = () => _hk || (_hk = MUNI_HK.map(m => ({ n: m.n, b: m.b, r: m.r.map(plDecode) })));
@@ -980,23 +960,6 @@ function inRing(x, y, r){
   }
   return c;
 }
-
-const _pref = new Map();
-function prefOf(lat, lon){
-  if (lat == null || lon == null) return "";
-  const key = lat.toFixed(2) + "," + lon.toFixed(2);
-  if (_pref.has(key)) return _pref.get(key);
-  let best = null, bd = Infinity;
-  const k = Math.cos(lat * RAD);
-  for (const p of MUNI_PT){
-    const dx = (p[2] - lon) * k, dy = p[3] - lat, d = dx*dx + dy*dy;
-    if (d < bd){ bd = d; best = p; }
-  }
-  const v = best ? best[1] : "";
-  _pref.set(key, v);
-  return v;
-}
-const tp = p => (state.lang === "en" && PREF[p]) ? PREF[p] : p;
 
 const _town = new Map();
 function townOf(lat, lon){
@@ -1030,477 +993,363 @@ function mapHTML(days){
   days.forEach(d => d.moments.forEach(m => { if (m.lat != null) stops.push(m); }));
   if (!stops.length) return "";
 
+  /* On a phone the sheet turns portrait and everything on it grows: a 1000-unit
+     canvas squeezed into 370 CSS px renders 11px type at 4px. F scales every
+     hand-drawn size in step with the CSS block under @media (max-width:640px). */
   const nar = narrow();
-  const tt = T();
+  const F = nar ? 1.95 : 1;
+  const MW = nar ? 620 : 1000, MH = nar ? 740 : 620, MPAD = nar ? 54 : 66;
+  /* MH is the map itself; SH is the whole sheet. On a phone there is no empty
+     corner left for the locator inset, so the sheet grows a band underneath. */
+  const SH = nar ? MH + 244 : MH;
 
-  const boxOf = list => {
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (const m of list){
-      const x = mlon(m.lon), y = merc(m.lat);
-      if (x < x0) x0 = x;
-      if (x > x1) x1 = x;
-      if (y < y0) y0 = y;
-      if (y > y1) y1 = y;
-    }
-    return { x0, x1, y0, y1 };
-  };
+  const lons = stops.map(s => mlon(s.lon)), lats = stops.map(s => merc(s.lat));
+  let x0 = Math.min(...lons), x1 = Math.max(...lons);
+  let y0 = Math.min(...lats), y1 = Math.max(...lats);
+  const grow = (a, b, min) => (b - a < min) ? [(a+b)/2 - min/2, (a+b)/2 + min/2] : [a, b];
+  [x0, x1] = grow(x0, x1, 1.2e-4);
+  [y0, y1] = grow(y0, y1, 1.2e-4);
+  const s = Math.min((MW - 2*MPAD) / (x1 - x0), (MH - 2*MPAD) / (y1 - y0));
+  const ox = MW/2 - (x0 + x1)/2 * s, oy = MH/2 + (y0 + y1)/2 * s;
+  const XY = m => ({ x: ox + mlon(m.lon) * s, y: oy - merc(m.lat) * s });
 
-  /* ---- where the trip actually happened ---------------------------------
-     Out and back from home leaves two clumps a long way apart. Fitting the
-     whole thing makes the part you walked a smudge, so find the clump that
-     holds most of the photos and, if it is small on the overview, draw it
-     again on its own sheet. */
-  function coreOf(){
-    const full = boxOf(stops);
-    const diag = Math.hypot(full.x1 - full.x0, full.y1 - full.y0);
-    if (!(diag > 0)) return null;
-    const link = diag * 0.10;
-    const P = stops.map(m => ({ m, x: mlon(m.lon), y: merc(m.lat) }));
-    const par = P.map((_, i) => i);
-    const find = i => { while (par[i] !== i){ par[i] = par[par[i]]; i = par[i]; } return i; };
-    for (let i = 0; i < P.length; i++){
-      for (let j = i + 1; j < P.length; j++){
-        if (Math.hypot(P[i].x - P[j].x, P[i].y - P[j].y) < link){
-          const a = find(i), b = find(j);
-          if (a !== b) par[a] = b;
-        }
-      }
-    }
-    const g = new Map();
-    P.forEach((p, i) => {
-      const r = find(i);
-      if (!g.has(r)) g.set(r, []);
-      g.get(r).push(p);
-    });
-    if (g.size < 2) return null;                 /* one clump — the overview already is it */
-    let best = null, bestShots = 0, total = 0;
-    for (const m of stops) total += m.photos.length;
-    for (const grp of g.values()){
-      const n = grp.reduce((a, p) => a + p.m.photos.length, 0);
-      if (n > bestShots){ bestShots = n; best = grp; }
-    }
-    if (!best || best.length < 2 || bestShots < total * 0.3) return null;
-    const f = boxOf(best.map(p => p.m));
-    if (Math.hypot(f.x1 - f.x0, f.y1 - f.y0) > diag * 0.45) return null;   /* big enough already */
-    const px = Math.max((f.x1 - f.x0) * 0.28, diag * 0.010);
-    const py = Math.max((f.y1 - f.y0) * 0.28, diag * 0.010);
-    const tally = new Map();
-    for (const p of best) if (p.m.town) tally.set(p.m.town, (tally.get(p.m.town) || 0) + p.m.photos.length);
-    const top = [...tally.entries()].sort((a, b) => b[1] - a[1])[0];
-    return {
-      fit: { x0: f.x0 - px, x1: f.x1 + px, y0: f.y0 - py, y1: f.y1 + py },
-      town: top ? top[0] : "",
-      list: best.map(p => p.m)
-    };
-  }
+  const rnd = rng(1337 + stops.length * 7);
 
-  /* prefectures a set of stops falls in, in the order they were first seen */
-  function prefsOf(list){
-    const seen = [];
-    for (const m of list){
-      const p = prefOf(m.lat, m.lon);
-      if (p && seen.indexOf(p) < 0) seen.push(p);
-    }
-    return seen;
-  }
-
-  const core = coreOf();
-  const numbered = stops.length <= 24 && !core;
-  for (const m of stops) m.stop = null;
-
-  /* ---- one sheet ------------------------------------------------------- */
-  function sheet(sid, fitIn, wantInset, wantNumbers, timeLabels){
-    /* On a phone the sheet turns portrait and everything on it grows: a
-       1000-unit canvas squeezed into 370 CSS px renders 11px type at 4px. */
-    const F = nar ? 1.95 : 1;
-    const MW = nar ? 620 : 1000, MH = nar ? 740 : 620, MPAD = nar ? 54 : 66;
-    const SH = (nar && wantInset) ? MH + 244 : MH;
-
-    let x0 = fitIn.x0, x1 = fitIn.x1, y0 = fitIn.y0, y1 = fitIn.y1;
-    const grow = (a, b, min) => (b - a < min) ? [(a+b)/2 - min/2, (a+b)/2 + min/2] : [a, b];
-    [x0, x1] = grow(x0, x1, 1.2e-4);
-    [y0, y1] = grow(y0, y1, 1.2e-4);
-    const s = Math.min((MW - 2*MPAD) / (x1 - x0), (MH - 2*MPAD) / (y1 - y0));
-    const ox = MW/2 - (x0 + x1)/2 * s, oy = MH/2 + (y0 + y1)/2 * s;
-    const XY = m => ({ x: ox + mlon(m.lon) * s, y: oy - merc(m.lat) * s });
-
-    const rnd = rng(1337 + stops.length * 7);
-
-    /* ---- fold neighbouring stops into one place -------------------------
-       Every mark sits where the photo was actually taken; an earlier version
-       pushed overlapping marks apart until they fit, which left circles out
-       at sea. Merging is the honest fix. */
-    const CD = nar ? 23 : 15;
-    const places = [];
-    const placeOf = new Map();
-    for (const m of stops){
-      const q = XY(m);
-      let best = null, bd = CD * CD;
-      for (const c of places){
-        const dx = c.x - q.x, dy = c.y - q.y, d = dx*dx + dy*dy;
-        if (d < bd){ bd = d; best = c; }
-      }
-      if (best){
-        best.shots += m.photos.length;
-        const w = m.photos.length / best.shots;
-        best.x += (q.x - best.x) * w;
-        best.y += (q.y - best.y) * w;
-        best.moments.push(m);
-      } else {
-        best = { x: q.x, y: q.y, shots: m.photos.length, moments: [m] };
-        places.push(best);
-      }
-      placeOf.set(m, best);
-    }
+  /* ---- fold neighbouring stops into one place -----------------------------
+     Every mark sits where the photo was actually taken. An earlier version
+     pushed overlapping marks apart until they fit, which with a few hundred
+     photos left circles sitting out at sea. Merging is the honest fix: if two
+     stops are closer than a marker's width, they were the same place. */
+  /* ~14 CSS px of separation either way: the phone sheet is 620 units wide but
+     renders in ~370 px, so the threshold is in screen terms, not sheet units. */
+  const CD = nar ? 23 : 15;
+  const places = [];
+  const placeOf = new Map();
+  for (const m of stops){
+    const q = XY(m);
+    let best = null, bd = CD * CD;
     for (const c of places){
-      c.moments.sort((a, b) => a.start - b.start);
-      c.start = c.moments[0].start;
-      c.days = [...new Set(c.moments.map(m => m.dayIdx + 1))].sort((a, b) => a - b);
-      const tally = new Map();
-      for (const m of c.moments) if (m.town) tally.set(m.town, (tally.get(m.town) || 0) + m.photos.length);
-      const top = [...tally.entries()].sort((a, b) => b[1] - a[1])[0];
-      c.town = top ? top[0] : "";
+      const dx = c.x - q.x, dy = c.y - q.y, d = dx*dx + dy*dy;
+      if (d < bd){ bd = d; best = c; }
     }
-    places.sort((a, b) => a.start - b.start);
-    places.forEach((c, i) => {
-      c.no = i + 1;
-      if (wantNumbers) for (const m of c.moments) m.stop = c.no;
-    });
+    if (best){
+      best.shots += m.photos.length;
+      const w = m.photos.length / best.shots;
+      best.x += (q.x - best.x) * w;
+      best.y += (q.y - best.y) * w;
+      best.moments.push(m);
+    } else {
+      best = { x: q.x, y: q.y, shots: m.photos.length, moments: [m] };
+      places.push(best);
+    }
+    placeOf.set(m, best);
+  }
+  for (const c of places){
+    c.moments.sort((a, b) => a.start - b.start);
+    c.start = c.moments[0].start;
+    c.days = [...new Set(c.moments.map(m => m.dayIdx + 1))].sort((a, b) => a - b);
+    const tally = new Map();
+    for (const m of c.moments) if (m.town) tally.set(m.town, (tally.get(m.town) || 0) + m.photos.length);
+    const top = [...tally.entries()].sort((a, b) => b[1] - a[1])[0];
+    c.town = top ? top[0] : "";
+  }
+  places.sort((a, b) => a.start - b.start);
 
-    const R_OF = c => wantNumbers
-      ? Math.min(17*F, (8.5 + Math.sqrt(c.shots) * 1.9) * F)
-      : Math.min(10*F, (2.6 + Math.sqrt(c.shots) * 0.9) * F);
+  /* Numbers only read while there are few enough to follow one by one. Past
+     that they are noise, and the names plus the arrows carry the map. */
+  const NUMBERED = stops.length <= 24;
+  places.forEach((c, i) => {
+    c.no = i + 1;
+    for (const m of c.moments) m.stop = NUMBERED ? c.no : null;
+  });
 
-    const onSheet = c => c.x > -20 && c.x < MW + 20 && c.y > -20 && c.y < MH + 20;
-    const clear = (x, y, w, h) => {
-      for (const c of places)
-        if (Math.abs(c.x - x) < w && Math.abs(c.y - y) < h) return false;
-      return true;
-    };
-    const taken = [];
-    const free = (list, x, y, w, h) => {
-      for (const t of list)
-        if (Math.abs(t.x - x) < (t.w/2 + w) && Math.abs(t.y - y) < (t.h/2 + h)) return false;
-      return true;
-    };
-    let g = "", gp = "";
+  const R_OF = c => NUMBERED
+    ? Math.min(17*F, (8.5 + Math.sqrt(c.shots) * 1.9) * F)
+    : Math.min(10*F, (2.6 + Math.sqrt(c.shots) * 0.9) * F);
 
-    /* the visible window, in degrees */
+  const clear = (x, y, w, h) => {
+    for (const c of places)
+      if (Math.abs(c.x - x) < w && Math.abs(c.y - y) < h) return false;
+    return true;
+  };
+  const taken = [];
+  const free = (list, x, y, w, h) => {
+    for (const t of list)
+      if (Math.abs(t.x - x) < (t.w/2 + w) && Math.abs(t.y - y) < (t.h/2 + h)) return false;
+    return true;
+  };
+  let g = "", gp = "";
+
+  /* coastline — the real shoreline, laid in faintly under the sketch */
+  let coastSVG = "";
+  {
     const M = 60*F;
     const loA = (-M - ox) / (s * RAD), loB = (MW + M - ox) / (s * RAD);
     const laA = unmerc((oy - MH - M) / s), laB = unmerc((oy + M) / s);
-
-    const traceRings = (rings, thin) => {
-      let outp = "";
-      for (const r of rings){
-        const b = r.b;
-        if (b[2] < loA || b[0] > loB || b[3] < laA || b[1] > laB) continue;
-        let dd = "", lx = Infinity, ly = Infinity, n = 0;
-        const last = r.p.length - 1;
-        for (let i = 0; i <= last; i++){
-          const x = ox + r.p[i][0] * RAD * s, y = oy - merc(r.p[i][1]) * s;
-          if (i && i < last && Math.abs(x - lx) < thin && Math.abs(y - ly) < thin) continue;
-          dd += (n++ ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1);
-          lx = x; ly = y;
-        }
-        if (n > 1) outp += '<path d="' + dd + '"/>';
+    for (const r of coastRings()){
+      const b = r.b;
+      if (b[2] < loA || b[0] > loB || b[3] < laA || b[1] > laB) continue;
+      let dd = "", lx = Infinity, ly = Infinity, n = 0;
+      const last = r.p.length - 1;
+      for (let i = 0; i <= last; i++){
+        const x = ox + r.p[i][0] * RAD * s, y = oy - merc(r.p[i][1]) * s;
+        if (i && i < last && Math.abs(x - lx) < .7*F && Math.abs(y - ly) < .7*F) continue;
+        dd += (n++ ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1);
+        lx = x; ly = y;
       }
-      return outp;
-    };
-
-    /* coastline and prefecture borders — the ground the sketch sits on */
-    const coastSVG = traceRings(coastRings(), .7*F);
-    const prefSVG = traceRings(prefRings(), .7*F);
-
-    /* graticule — a field-notebook grid, ruled on real degrees */
-    const lonMin = x0 / RAD, lonMax = x1 / RAD;
-    const latMin = unmerc(y0), latMax = unmerc(y1);
-    const spanDeg = Math.max(lonMax - lonMin, latMax - latMin);
-    const steps = [0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1,2,5];
-    const step = steps.find(v => spanDeg / v <= 5) || 10;
-    const dp = step < 0.01 ? 3 : step < 0.1 ? 2 : step < 1 ? 1 : 0;
-    const latC = (latMin + latMax) / 2;
-    for (let lo = Math.floor(lonMin / step) * step; lo <= lonMax + step; lo += step){
-      const x = ox + mlon(lo) * s;
-      if (x < 26*F || x > MW - 14*F) continue;
-      g += '<path class="grat" d="' + wobble([{x, y: 14*F},{x, y: MH-14*F}], rnd, 3*F, 90*F) + '"/>';
-      if (clear(x + 22*F, MH - 24*F, 46*F, 26*F))
-        g += '<text class="lbl" x="' + (x+4*F).toFixed(1) + '" y="' + (MH-20*F).toFixed(1) + '">' + lo.toFixed(dp) + '°E</text>';
+      if (n > 3) coastSVG += '<path d="' + dd + '"/>';
     }
-    for (let la = Math.floor(latMin / step) * step; la <= latMax + step; la += step){
-      const y = oy - merc(la) * s;
-      if (y < 26*F || y > MH - 40*F) continue;
-      g += '<path class="grat" d="' + wobble([{x: 14*F, y},{x: MW-14*F, y}], rnd, 3*F, 90*F) + '"/>';
-      if (clear(42*F, y - 10*F, 48*F, 24*F))
-        g += '<text class="lbl" x="' + (20*F).toFixed(1) + '" y="' + (y-6*F).toFixed(1) + '">' + la.toFixed(dp) + '°N</text>';
-    }
-
-    /* ---- the track ---- */
-    const chainOf = d => {
-      const seq = [];
-      for (const m of d.moments){
-        if (m.lat == null) continue;
-        const c = placeOf.get(m);
-        if (!seq.length || seq[seq.length-1] !== c) seq.push(c);
-      }
-      return seq.map(c => ({ x: c.x, y: c.y }));
-    };
-    days.forEach(d => {
-      const pts = chainOf(d);
-      if (pts.length > 1){
-        const r2 = rng(9000 + d.no * 31);
-        g += '<g class="rt" data-day="' + d.no + '">' +
-          '<path class="route" d="' + wobble(pts, r2, 4*F, 26*F) + '"/>' +
-          '<path class="route" style="stroke-opacity:.26" d="' + wobble(pts, r2, 5*F, 30*F) + '"/>' +
-          arrows(pts, 92*F, 5*F) +
-          '</g>';
-      }
-    });
-    for (let i = 0; i < days.length - 1; i++){
-      const a = [...days[i].moments].reverse().find(m => m.lat != null);
-      const b = days[i+1].moments.find(m => m.lat != null);
-      if (!a || !b) continue;
-      const pa = placeOf.get(a), pb = placeOf.get(b);
-      if (pa === pb) continue;
-      g += '<path class="route night" d="' +
-        wobble([{x: pa.x, y: pa.y}, {x: pb.x, y: pb.y}], rnd, 5*F, 30*F) + '"/>';
-    }
-
-    /* ---- places ---- */
-    for (const c of places){
-      if (!onSheet(c)) continue;
-      const r = R_OF(c);
-      const when = c.days.length > 1
-        ? tt.daysOf(c.days)
-        : tt.dayNo(c.days[0]) + " " + hhmm(c.start);
-      const title = (c.town ? tn(c.town) + tt.sep : "") + when + tt.sep + tt.photos(c.shots) +
-        (c.moments.length > 1 ? tt.times(c.moments.length) : "");
-      gp += '<g class="mk" data-mid="' + c.moments[0].id +
-        '" data-mids="' + c.moments.map(m => m.id).join(",") +
-        '" data-days="' + c.days.join(",") + '" tabindex="0" role="button">' +
-        '<title>' + esc(title) + '</title>' +
-        '<circle class="hit" cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) +
-          '" r="' + Math.max(r + 5*F, 10*F).toFixed(1) + '"/>' +
-        '<circle class="halo" cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) + '" r="' + (r + 9*F).toFixed(1) + '"/>' +
-        '<circle class="disc" cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) + '" r="' + r.toFixed(1) + '"/>' +
-        '<path class="ring" d="' + ring(c.x, c.y, r, rnd, 1.3*F) + '"/>' +
-        (wantNumbers
-          ? '<text class="num" x="' + c.x.toFixed(1) + '" y="' + (c.y + 4*F).toFixed(1) + '" text-anchor="middle">' + c.no + '</text>'
-          : "") +
-        '</g>';
-    }
-
-    /* day labels, on the first place of each day that is on this sheet */
-    days.forEach(d => {
-      const first = d.moments.find(m => m.lat != null && onSheet(placeOf.get(m)));
-      if (!first) return;
-      const c = placeOf.get(first), rr = R_OF(c);
-      const cands = [
-        { x: c.x + rr + 8*F,  y: c.y - rr - 4*F,  a: "start" },
-        { x: c.x + rr + 8*F,  y: c.y + rr + 14*F, a: "start" },
-        { x: c.x - rr - 8*F,  y: c.y - rr - 4*F,  a: "end" },
-        { x: c.x - rr - 8*F,  y: c.y + rr + 14*F, a: "end" },
-        { x: c.x, y: c.y - rr - 10*F, a: "middle" },
-        { x: c.x, y: c.y + rr + 20*F, a: "middle" },
-        { x: c.x + rr + 8*F, y: c.y + 4*F, a: "start" },
-        { x: c.x - rr - 8*F, y: c.y + 4*F, a: "end" }
-      ];
-      const dayLbl = tt.dayNo(d.no);
-      const dw = dayLbl.length * (state.lang === "en" ? 7.5 : 13) * F;
-      const spot = cands.find(q => {
-        const qx = q.a === "start" ? q.x + dw/2 : q.a === "end" ? q.x - dw/2 : q.x;
-        return qx - dw/2 > 14*F && qx + dw/2 < MW - 14*F && q.y > 26*F && q.y < MH - 30*F &&
-          clear(qx, q.y - 5*F, dw/2 + 4*F, 16*F) && free(taken, qx, q.y - 5*F, dw/2 + 4*F, 16*F);
-      }) || cands[0];
-      gp += '<text class="daylbl" data-days="' + d.no + '" text-anchor="' + spot.a + '" x="' +
-        spot.x.toFixed(1) + '" y="' + spot.y.toFixed(1) + '">' + esc(dayLbl) + '</text>';
-      taken.push({ x: spot.a === "start" ? spot.x + dw/2 : spot.a === "end" ? spot.x - dw/2 : spot.x,
-                   y: spot.y, w: dw, h: 15*F });
-    });
-
-    /* Place names, one per town. On the close-up every stop is usually in the
-       same municipality, so the rest fall back to the time you were there —
-       which is what tells the day's story at that scale anyway. */
-    {
-      const picks = [];
-      const seen = new Set();
-      for (const c of [...places].sort((a, b) => b.shots - a.shots)){
-        if (!onSheet(c)) continue;
-        if (c.town && !seen.has(c.town)){
-          seen.add(c.town);
-          picks.push({ c, name: tn(c.town), kind: "townlbl" });
-        } else if (timeLabels){
-          picks.push({ c, name: hhmm(c.start), kind: "timelbl" });
-        }
-        if (picks.length >= (nar ? 13 : 18)) break;
-      }
-      for (const pick of picks){
-        const c = pick.c, name = pick.name, rr = R_OF(c);
-        const w = name.length * (pick.kind === "timelbl" ? 6.6 : (state.lang === "en" ? 7 : 11.5)) * F + 4*F;
-        const cands = [
-          { x: c.x, y: c.y - rr - 9*F, a: "middle" },
-          { x: c.x, y: c.y + rr + 18*F, a: "middle" },
-          { x: c.x + rr + 7*F, y: c.y + 4*F, a: "start" },
-          { x: c.x - rr - 7*F, y: c.y + 4*F, a: "end" },
-          { x: c.x + rr + 5*F, y: c.y - rr - 4*F, a: "start" },
-          { x: c.x - rr - 5*F, y: c.y - rr - 4*F, a: "end" },
-          { x: c.x + rr + 5*F, y: c.y + rr + 15*F, a: "start" },
-          { x: c.x - rr - 5*F, y: c.y + rr + 15*F, a: "end" }
-        ];
-        const spot = cands.find(q => {
-          const qx = q.a === "start" ? q.x + w/2 : q.a === "end" ? q.x - w/2 : q.x;
-          return qx - w/2 > 14*F && qx + w/2 < MW - 14*F && q.y > 24*F && q.y < MH - 20*F &&
-            clear(qx, q.y - 5*F, w/2 + 4*F, 13*F) && free(taken, qx, q.y - 5*F, w/2 + 4*F, 13*F);
-        });
-        if (!spot) continue;
-        const qx = spot.a === "start" ? spot.x + w/2 : spot.a === "end" ? spot.x - w/2 : spot.x;
-        taken.push({ x: qx, y: spot.y - 5*F, w, h: 15*F });
-        gp += '<text class="' + pick.kind + '" data-days="' + c.days.join(",") + '" text-anchor="' + spot.a +
-          '" x="' + spot.x.toFixed(1) + '" y="' + spot.y.toFixed(1) + '">' + esc(name) + '</text>';
-      }
-    }
-
-    /* prefecture names — background orientation, so they take what is left */
-    for (const [pname, plon, plat] of PREFL){
-      const x = ox + mlon(plon) * s, y = oy - merc(plat) * s;
-      if (x < 40*F || x > MW - 40*F || y < 34*F || y > MH - 40*F) continue;
-      const label = tp(pname);
-      const w = label.length * (state.lang === "en" ? 8 : 13) * F;
-      if (!clear(x, y, w/2 + 6*F, 15*F) || !free(taken, x, y, w/2 + 6*F, 15*F)) continue;
-      taken.push({ x, y, w, h: 18*F });
-      g += '<text class="preflbl" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) +
-        '" text-anchor="middle">' + esc(label) + '</text>';
-    }
-
-    /* compass + scale bar, drawn by hand */
-    const cx = MW - 74*F, cy = 62*F;
-    g += '<g class="deco">' +
-      '<path d="' + ring(cx, cy, 19*F, rnd, 1.6*F) + '"/>' +
-      '<path d="' + wobble([{x:cx, y:cy+13*F},{x:cx, y:cy-13*F}], rnd, 1.4*F, 8*F) + '"/>' +
-      '<path d="' + wobble([{x:cx-4.5*F, y:cy-6*F},{x:cx, y:cy-14*F},{x:cx+4.5*F, y:cy-6*F}], rnd, 1.2*F, 8*F) + '"/>' +
-      '</g><text class="daylbl" x="' + cx.toFixed(1) + '" y="' + (cy + 33*F).toFixed(1) + '" text-anchor="middle">' + esc(tt.north) + '</text>';
-    taken.push({ x: cx, y: cy + 10*F, w: 60*F, h: 76*F });
-
-    const uPerKm = s / (6371 * Math.cos(latC * RAD));
-    const nice = [0.05,0.1,0.2,0.5,1,2,5,10,20,50,100,200,500,1000].find(v => v * uPerKm > 130*F) || 1000;
-    const barW = nice * uPerKm, bx = 44*F, by = MH - 46*F;
-    g += '<g class="deco">' +
-      '<path d="' + wobble([{x:bx, y:by},{x:bx+barW, y:by}], rnd, 1.6*F, 22*F) + '"/>' +
-      '<path d="' + wobble([{x:bx, y:by-5*F},{x:bx, y:by+5*F}], rnd, 1.2*F, 8*F) + '"/>' +
-      '<path d="' + wobble([{x:bx+barW, y:by-5*F},{x:bx+barW, y:by+5*F}], rnd, 1.2*F, 8*F) + '"/>' +
-      '</g><text class="lbl" x="' + (bx + barW/2).toFixed(1) + '" y="' + (by - 10*F).toFixed(1) + '" text-anchor="middle">' + (nice < 1 ? (nice*1000) + ' m' : nice + ' km') + '</text>';
-    taken.push({ x: bx + barW/2, y: by - 4*F, w: barW + 24*F, h: 34*F });
-
-    /* 日本全図のインセット — この地図が日本のどこを写しているか */
-    let insetSVG = "";
-    if (wantInset){
-      const IW = nar ? 172 : 116, IH = IW * 1.293;
-      let best;
-      if (nar){
-        best = { x: MW - IW - 20, y: MH + 12 };
-      } else {
-        const spotsI = [
-          { x: MW - IW - 24, y: MH - IH - 30 },
-          { x: 24, y: 24 },
-          { x: 24, y: MH - IH - 30 },
-          { x: MW - IW - 24, y: 24 }
-        ];
-        const inBox = (q, X, Y) => X > q.x - 10 && X < q.x + IW + 10 && Y > q.y - 10 && Y < q.y + IH + 10;
-        let bestN = Infinity;
-        best = spotsI[0];
-        spotsI.forEach((q, i) => {
-          let n = i * 0.1;
-          for (const c of places) if (inBox(q, c.x, c.y)) n++;
-          for (const t of taken) if (inBox(q, t.x, t.y)) n += 0.6;
-          if (n < bestN){ bestN = n; best = q; }
-        });
-      }
-      const ix = best.x, iy = best.y;
-      const JB = [122.8, 24.0, 148.2, 45.7];
-      const jx0 = JB[0]*RAD, jx1 = JB[2]*RAD, jy0 = merc(JB[1]), jy1 = merc(JB[3]);
-      const js = Math.min((IW - 15) / (jx1 - jx0), (IH - 15) / (jy1 - jy0));
-      const jox = ix + IW/2 - (jx0 + jx1)/2 * js, joy = iy + IH/2 + (jy0 + jy1)/2 * js;
-      const JXY = (lon, lat) => ({ x: jox + lon * RAD * js, y: joy - merc(lat) * js });
-
-      let jd = "";
-      for (const r of coastJpRings()){
-        let dd = "", lx = Infinity, ly = Infinity, n = 0;
-        const last = r.p.length - 1;
-        for (let i = 0; i <= last; i++){
-          const q = JXY(r.p[i][0], r.p[i][1]);
-          if (i && i < last && Math.abs(q.x - lx) < .55 && Math.abs(q.y - ly) < .55) continue;
-          dd += (n++ ? "L" : "M") + q.x.toFixed(1) + " " + q.y.toFixed(1);
-          lx = q.x; ly = q.y;
-        }
-        if (n > 2) jd += '<path class="land" d="' + dd + '"/>';
-      }
-
-      /* the trip's own extent, not just its middle */
-      const a1 = JXY(lonMin, latMin), a2 = JXY(lonMax, latMax);
-      const rx = Math.min(a1.x, a2.x), ry = Math.min(a1.y, a2.y);
-      const rw = Math.abs(a2.x - a1.x), rh = Math.abs(a2.y - a1.y);
-      const here = { x: rx + rw/2, y: ry + rh/2 };
-      const r3 = rng(4242);
-      insetSVG = '<g class="inset" style="pointer-events:none">' +
-        '<rect class="pad" x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" width="' + IW.toFixed(1) + '" height="' + IH.toFixed(1) + '" rx="2"/>' +
-        jd +
-        (Math.max(rw, rh) > 7
-          ? '<rect class="herebox" x="' + (rx-2).toFixed(1) + '" y="' + (ry-2).toFixed(1) +
-            '" width="' + (rw+4).toFixed(1) + '" height="' + (rh+4).toFixed(1) + '" rx="1.5"/>'
-          : '<circle class="here" cx="' + here.x.toFixed(1) + '" cy="' + here.y.toFixed(1) + '" r="3"/>' +
-            '<path class="herering" d="' + ring(here.x, here.y, 8.5, r3, 1.2) + '"/>') +
-        '<path class="edge" d="' + frame(ix, iy, IW, IH, r3) + '"/>' +
-        '<text class="lbl" x="' + (ix + 9).toFixed(1) + '" y="' + (iy + (nar ? 24 : 15)).toFixed(1) + '">' + esc(tt.japan) + '</text>' +
-        '</g>';
-    }
-
-    g += '<path class="frame" d="' + frame(10*F, 10*F, MW-20*F, MH-20*F, rnd) + '"/>';
-
-    const P = id => id + "-" + sid;
-    const html = '<div class="sheet"><svg class="sketch" viewBox="0 0 ' + MW + ' ' + SH + '" role="img" aria-label="' + esc(tt.mapAria) + '">' +
-      '<defs><filter id="' + P("pencil") + '" x="-5%" y="-5%" width="110%" height="110%">' +
-      '<feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" seed="4" result="n"/>' +
-      '<feDisplacementMap in="SourceGraphic" in2="n" scale="1.5" xChannelSelector="R" yChannelSelector="G"/>' +
-      '</filter><filter id="' + P("grain") + '"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/>' +
-      '<feColorMatrix type="saturate" values="0"/></filter>' +
-      '<clipPath id="' + P("mapclip") + '"><rect x="0" y="0" width="' + MW + '" height="' + MH + '"/></clipPath></defs>' +
-      '<rect width="' + MW + '" height="' + SH + '" fill="none"/>' +
-      '<g class="pref" clip-path="url(#' + P("mapclip") + ')">' + prefSVG + '</g>' +
-      '<g class="coast" clip-path="url(#' + P("mapclip") + ')">' + coastSVG + '</g>' +
-      '<g filter="url(#' + P("pencil") + ')">' + g + '</g><g>' + gp + '</g>' + insetSVG +
-      '<rect width="' + MW + '" height="' + SH + '" filter="url(#' + P("grain") + ')" opacity=".06" style="pointer-events:none"/>' +
-      '</svg></div>';
-    return { html, places };
   }
 
-  const over = sheet("o", boxOf(stops), true, numbered, false);
-  const det = core ? sheet("d", core.fit, false, false, true) : null;
+  /* graticule — a field-notebook grid, ruled on real degrees */
+  const lonMin = x0 / RAD, lonMax = x1 / RAD;
+  const latMin = unmerc(y0), latMax = unmerc(y1);
+  const spanDeg = Math.max(lonMax - lonMin, latMax - latMin);
+  const steps = [0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1,2,5];
+  const step = steps.find(v => spanDeg / v <= 5) || 10;
+  const dp = step < 0.01 ? 3 : step < 0.1 ? 2 : step < 1 ? 1 : 0;
+  const latC = stops.reduce((a, b) => a + b.lat, 0) / stops.length;
+  for (let lo = Math.floor(lonMin / step) * step; lo <= lonMax + step; lo += step){
+    const x = ox + mlon(lo) * s;
+    if (x < 26*F || x > MW - 14*F) continue;
+    g += '<path class="grat" d="' + wobble([{x, y: 14*F},{x, y: MH-14*F}], rnd, 3*F, 90*F) + '"/>';
+    if (clear(x + 22*F, MH - 24*F, 46*F, 26*F))
+      g += '<text class="lbl" x="' + (x+4*F).toFixed(1) + '" y="' + (MH-20*F).toFixed(1) + '">' + lo.toFixed(dp) + '°E</text>';
+  }
+  for (let la = Math.floor(latMin / step) * step; la <= latMax + step; la += step){
+    const y = oy - merc(la) * s;
+    if (y < 26*F || y > MH - 40*F) continue;
+    g += '<path class="grat" d="' + wobble([{x: 14*F, y},{x: MW-14*F, y}], rnd, 3*F, 90*F) + '"/>';
+    if (clear(42*F, y - 10*F, 48*F, 24*F))
+      g += '<text class="lbl" x="' + (20*F).toFixed(1) + '" y="' + (y-6*F).toFixed(1) + '">' + la.toFixed(dp) + '°N</text>';
+  }
 
+  /* ---- the track — the thing the map is actually for ---------------------
+     Solid inside a day with arrowheads for direction, dashed across the night. */
+  const chainOf = d => {
+    const seq = [];
+    for (const m of d.moments){
+      if (m.lat == null) continue;
+      const c = placeOf.get(m);
+      if (!seq.length || seq[seq.length-1] !== c) seq.push(c);
+    }
+    return seq.map(c => ({ x: c.x, y: c.y }));
+  };
+  days.forEach(d => {
+    const pts = chainOf(d);
+    if (pts.length > 1){
+      const r2 = rng(9000 + d.no * 31);
+      g += '<g class="rt" data-day="' + d.no + '">' +
+        '<path class="route" d="' + wobble(pts, r2, 4*F, 26*F) + '"/>' +
+        '<path class="route" style="stroke-opacity:.26" d="' + wobble(pts, r2, 5*F, 30*F) + '"/>' +
+        arrows(pts, 92*F, 5*F) +
+        '</g>';
+    }
+  });
+  for (let i = 0; i < days.length - 1; i++){
+    const a = [...days[i].moments].reverse().find(m => m.lat != null);
+    const b = days[i+1].moments.find(m => m.lat != null);
+    if (!a || !b) continue;
+    const pa = placeOf.get(a), pb = placeOf.get(b);
+    if (pa === pb) continue;
+    g += '<path class="route night" d="' +
+      wobble([{x: pa.x, y: pa.y}, {x: pb.x, y: pb.y}], rnd, 5*F, 30*F) + '"/>';
+  }
+
+  /* ---- places ---- */
+  for (const c of places){
+    const r = R_OF(c);
+    const tt = T();
+    const when = c.days.length > 1
+      ? tt.daysOf(c.days)
+      : tt.dayNo(c.days[0]) + " " + hhmm(c.start);
+    const title = (c.town ? tn(c.town) + tt.sep : "") + when + tt.sep + tt.photos(c.shots) +
+      (c.moments.length > 1 ? tt.times(c.moments.length) : "");
+    gp += '<g class="mk" data-mid="' + c.moments[0].id +
+      '" data-mids="' + c.moments.map(m => m.id).join(",") +
+      '" data-days="' + c.days.join(",") + '" tabindex="0" role="button">' +
+      '<title>' + esc(title) + '</title>' +
+      '<circle class="hit" cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) +
+        '" r="' + Math.max(r + 5*F, 10*F).toFixed(1) + '"/>' +
+      '<circle class="halo" cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) + '" r="' + (r + 9*F).toFixed(1) + '"/>' +
+      '<circle class="disc" cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) + '" r="' + r.toFixed(1) + '"/>' +
+      '<path class="ring" d="' + ring(c.x, c.y, r, rnd, 1.3*F) + '"/>' +
+      (NUMBERED
+        ? '<text class="num" x="' + c.x.toFixed(1) + '" y="' + (c.y + 4*F).toFixed(1) + '" text-anchor="middle">' + c.no + '</text>'
+        : "") +
+      '</g>';
+  }
+
+  /* day labels, on the first place of each day */
+  days.forEach(d => {
+    const first = d.moments.find(m => m.lat != null);
+    if (!first) return;
+    const c = placeOf.get(first), rr = R_OF(c);
+    const cands = [
+      { x: c.x + rr + 8*F,  y: c.y - rr - 4*F,  a: "start" },
+      { x: c.x + rr + 8*F,  y: c.y + rr + 14*F, a: "start" },
+      { x: c.x - rr - 8*F,  y: c.y - rr - 4*F,  a: "end" },
+      { x: c.x - rr - 8*F,  y: c.y + rr + 14*F, a: "end" },
+      { x: c.x, y: c.y - rr - 10*F, a: "middle" },
+      { x: c.x, y: c.y + rr + 20*F, a: "middle" },
+      { x: c.x + rr + 8*F, y: c.y + 4*F, a: "start" },
+      { x: c.x - rr - 8*F, y: c.y + 4*F, a: "end" }
+    ];
+    const dayLbl = T().dayNo(d.no);
+    const dw = dayLbl.length * (state.lang === "en" ? 7.5 : 13) * F;
+    const spot = cands.find(q => {
+      const qx = q.a === "start" ? q.x + dw/2 : q.a === "end" ? q.x - dw/2 : q.x;
+      return qx - dw/2 > 14*F && qx + dw/2 < MW - 14*F && q.y > 26*F && q.y < MH - 30*F &&
+        clear(qx, q.y - 5*F, dw/2 + 4*F, 16*F) && free(taken, qx, q.y - 5*F, dw/2 + 4*F, 16*F);
+    }) || cands[0];
+    gp += '<text class="daylbl" data-days="' + d.no + '" text-anchor="' + spot.a + '" x="' +
+      spot.x.toFixed(1) + '" y="' + spot.y.toFixed(1) + '">' + esc(dayLbl) + '</text>';
+    taken.push({ x: spot.a === "start" ? spot.x + dw/2 : spot.a === "end" ? spot.x - dw/2 : spot.x,
+                 y: spot.y, w: dw, h: 15*F });
+  });
+
+  /* place names — the busiest place per town, as many as the sheet will hold */
+  {
+    const picks = [];
+    const seen = new Set();
+    for (const c of [...places].sort((a, b) => b.shots - a.shots)){
+      if (!c.town || seen.has(c.town)) continue;
+      seen.add(c.town);
+      picks.push(c);
+      if (picks.length >= (nar ? 13 : 18)) break;
+    }
+    for (const c of picks){
+      const name = tn(c.town), rr = R_OF(c);
+      const w = name.length * (state.lang === "en" ? 7 : 11.5) * F + 4*F;
+      const cands = [
+        { x: c.x, y: c.y - rr - 9*F, a: "middle" },
+        { x: c.x, y: c.y + rr + 18*F, a: "middle" },
+        { x: c.x + rr + 7*F, y: c.y + 4*F, a: "start" },
+        { x: c.x - rr - 7*F, y: c.y + 4*F, a: "end" },
+        { x: c.x + rr + 5*F, y: c.y - rr - 4*F, a: "start" },
+        { x: c.x - rr - 5*F, y: c.y - rr - 4*F, a: "end" },
+        { x: c.x + rr + 5*F, y: c.y + rr + 15*F, a: "start" },
+        { x: c.x - rr - 5*F, y: c.y + rr + 15*F, a: "end" }
+      ];
+      const spot = cands.find(q => {
+        const qx = q.a === "start" ? q.x + w/2 : q.a === "end" ? q.x - w/2 : q.x;
+        return qx - w/2 > 14*F && qx + w/2 < MW - 14*F && q.y > 24*F && q.y < MH - 20*F &&
+          clear(qx, q.y - 5*F, w/2 + 4*F, 13*F) && free(taken, qx, q.y - 5*F, w/2 + 4*F, 13*F);
+      });
+      if (!spot) continue;
+      const qx = spot.a === "start" ? spot.x + w/2 : spot.a === "end" ? spot.x - w/2 : spot.x;
+      taken.push({ x: qx, y: spot.y - 5*F, w, h: 15*F });
+      gp += '<text class="townlbl" data-days="' + c.days.join(",") + '" text-anchor="' + spot.a +
+        '" x="' + spot.x.toFixed(1) + '" y="' + spot.y.toFixed(1) + '">' + esc(name) + '</text>';
+    }
+  }
+
+  /* compass + scale bar, drawn by hand */
+  const cx = MW - 74*F, cy = 62*F;
+  g += '<g class="deco">' +
+    '<path d="' + ring(cx, cy, 19*F, rnd, 1.6*F) + '"/>' +
+    '<path d="' + wobble([{x:cx, y:cy+13*F},{x:cx, y:cy-13*F}], rnd, 1.4*F, 8*F) + '"/>' +
+    '<path d="' + wobble([{x:cx-4.5*F, y:cy-6*F},{x:cx, y:cy-14*F},{x:cx+4.5*F, y:cy-6*F}], rnd, 1.2*F, 8*F) + '"/>' +
+    '</g><text class="daylbl" x="' + cx.toFixed(1) + '" y="' + (cy + 33*F).toFixed(1) + '" text-anchor="middle">' + esc(T().north) + '</text>';
+  taken.push({ x: cx, y: cy + 10*F, w: 60*F, h: 76*F });
+
+  const uPerKm = s / (6371 * Math.cos(latC * RAD));
+  const nice = [0.1,0.2,0.5,1,2,5,10,20,50,100,200,500,1000].find(v => v * uPerKm > 130*F) || 1000;
+  const barW = nice * uPerKm, bx = 44*F, by = MH - 46*F;
+  g += '<g class="deco">' +
+    '<path d="' + wobble([{x:bx, y:by},{x:bx+barW, y:by}], rnd, 1.6*F, 22*F) + '"/>' +
+    '<path d="' + wobble([{x:bx, y:by-5*F},{x:bx, y:by+5*F}], rnd, 1.2*F, 8*F) + '"/>' +
+    '<path d="' + wobble([{x:bx+barW, y:by-5*F},{x:bx+barW, y:by+5*F}], rnd, 1.2*F, 8*F) + '"/>' +
+    '</g><text class="lbl" x="' + (bx + barW/2).toFixed(1) + '" y="' + (by - 10*F).toFixed(1) + '" text-anchor="middle">' + (nice < 1 ? (nice*1000) + ' m' : nice + ' km') + '</text>';
+  taken.push({ x: bx + barW/2, y: by - 4*F, w: barW + 24*F, h: 34*F });
+
+  /* 日本全図のインセット — この地図が日本のどこを写しているか */
+  let insetSVG = "";
+  {
+    /* Sized against the sheet rather than scaled by F — at F it would eat a
+       third of a portrait map. */
+    const IW = nar ? 172 : 116, IH = IW * 1.293;
+    let best;
+    if (nar){
+      best = { x: MW - IW - 20, y: MH + 12 };
+    } else {
+      const spots = [
+        { x: MW - IW - 24, y: MH - IH - 30 },
+        { x: 24, y: 24 },
+        { x: 24, y: MH - IH - 30 },
+        { x: MW - IW - 24, y: 24 }
+      ];
+      const inBox = (q, x, y) => x > q.x - 10 && x < q.x + IW + 10 && y > q.y - 10 && y < q.y + IH + 10;
+      let bestN = Infinity;
+      best = spots[0];
+      spots.forEach((q, i) => {
+        let n = i * 0.1;
+        for (const c of places) if (inBox(q, c.x, c.y)) n++;
+        for (const t of taken) if (inBox(q, t.x, t.y)) n += 0.6;
+        if (n < bestN){ bestN = n; best = q; }
+      });
+    }
+    const ix = best.x, iy = best.y;
+
+    const JB = [122.8, 24.0, 148.2, 45.7];
+    const jx0 = JB[0]*RAD, jx1 = JB[2]*RAD, jy0 = merc(JB[1]), jy1 = merc(JB[3]);
+    const js = Math.min((IW - 15) / (jx1 - jx0), (IH - 15) / (jy1 - jy0));
+    const jox = ix + IW/2 - (jx0 + jx1)/2 * js, joy = iy + IH/2 + (jy0 + jy1)/2 * js;
+    const JXY = (lon, lat) => ({ x: jox + lon * RAD * js, y: joy - merc(lat) * js });
+
+    let jd = "";
+    for (const r of coastJpRings()){
+      let dd = "", lx = Infinity, ly = Infinity, n = 0;
+      const last = r.p.length - 1;
+      for (let i = 0; i <= last; i++){
+        const q = JXY(r.p[i][0], r.p[i][1]);
+        if (i && i < last && Math.abs(q.x - lx) < .55 && Math.abs(q.y - ly) < .55) continue;
+        dd += (n++ ? "L" : "M") + q.x.toFixed(1) + " " + q.y.toFixed(1);
+        lx = q.x; ly = q.y;
+      }
+      if (n > 2) jd += '<path class="land" d="' + dd + '"/>';
+    }
+
+    const here = JXY((lonMin + lonMax) / 2, (latMin + latMax) / 2);
+    const r3 = rng(4242);
+    insetSVG = '<g class="inset" style="pointer-events:none">' +
+      '<rect class="pad" x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" width="' + IW.toFixed(1) + '" height="' + IH.toFixed(1) + '" rx="2"/>' +
+      jd +
+      '<circle class="here" cx="' + here.x.toFixed(1) + '" cy="' + here.y.toFixed(1) + '" r="3"/>' +
+      '<path class="herering" d="' + ring(here.x, here.y, 8.5, r3, 1.2) + '"/>' +
+      '<path class="edge" d="' + frame(ix, iy, IW, IH, r3) + '"/>' +
+      '<text class="lbl" x="' + (ix + 9).toFixed(1) + '" y="' + (iy + (nar ? 24 : 15)).toFixed(1) + '">' + esc(T().japan) + '</text>' +
+      '</g>';
+  }
+
+  g += '<path class="frame" d="' + frame(10*F, 10*F, MW-20*F, MH-20*F, rnd) + '"/>';
+
+  const tt = T();
   const chips = '<button class="chip on" data-chip="all">' + esc(tt.allChip) + '</button>' +
     days.map(d => '<button class="chip" data-chip="' + d.no + '">' + esc(tt.dayNo(d.no)) + '</button>').join("");
 
   const geoPhotos = state.photos.filter(p => p.lat != null).length;
   const towns = townCount(days);
-  const merged = stops.length - over.places.length;
-
-  const capt = (key, prefs, extra) =>
-    '<div class="sheetlbl"><b>' + esc(tt[key]) + '</b>' + esc(
-      (extra ? tt.sep + extra : "") +
-      (prefs.length ? tt.sep + tt.inPrefs(prefs.slice(0, 4).map(tp)) : "")) + '</div>';
-
-  const sheets = '<div class="sheets">' +
-    '<div class="sheetwrap">' + capt("sheetAll", prefsOf(stops), "") + over.html + '</div>' +
-    (det ? '<div class="sheetwrap">' + capt("sheetCore", prefsOf(core.list),
-             core.town ? tt.around(tn(core.town)) : "") + det.html + '</div>' : "") +
-    '</div>';
+  const merged = stops.length - places.length;
 
   return '<section class="mapsec" id="mapsec"><div class="maphead">' +
     '<h3>' + esc(tt.beenTo) + '</h3>' +
-    '<div class="sub">' + esc(tt.nPlaces(over.places.length) + (towns ? tt.sep + tt.nTowns(towns) : "") +
+    '<div class="sub">' + esc(tt.nPlaces(places.length) + (towns ? tt.sep + tt.nTowns(towns) : "") +
       tt.sep + tt.geotag(geoPhotos, state.photos.length)) + '</div>' +
     '<div class="chips">' + chips + '</div></div>' +
-    sheets +
-    '<div class="mapcap" id="mapcap">' + esc(tt.mapCap(merged, stops.length, over.places.length)) + '</div>' +
+    '<div class="sheet"><svg class="sketch" viewBox="0 0 ' + MW + ' ' + SH + '" role="img" aria-label="' + esc(tt.mapAria) + '">' +
+    '<defs><filter id="pencil" x="-5%" y="-5%" width="110%" height="110%">' +
+    '<feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" seed="4" result="n"/>' +
+    '<feDisplacementMap in="SourceGraphic" in2="n" scale="1.5" xChannelSelector="R" yChannelSelector="G"/>' +
+    '</filter><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/>' +
+    '<feColorMatrix type="saturate" values="0"/></filter>' +
+    '<clipPath id="mapclip"><rect x="0" y="0" width="' + MW + '" height="' + MH + '"/></clipPath></defs>' +
+    '<rect width="' + MW + '" height="' + SH + '" fill="none"/>' +
+    '<g class="coast" clip-path="url(#mapclip)">' + coastSVG + '</g>' +
+    '<g filter="url(#pencil)">' + g + '</g><g>' + gp + '</g>' + insetSVG +
+    '<rect width="' + MW + '" height="' + SH + '" filter="url(#grain)" opacity=".06" style="pointer-events:none"/>' +
+    '</svg></div>' +
+    '<div class="mapcap" id="mapcap">' + esc(tt.mapCap(merged, stops.length, places.length)) + '</div>' +
     '</section>';
 }
 
@@ -1710,20 +1559,19 @@ function flash(el){
   setTimeout(() => el.classList.remove("flash"), 1800);
 }
 function pulseMarker(mid){
-  /* the same stop can appear on both sheets — light every one of them */
-  const all = [...out.querySelectorAll(".mk")].filter(n =>
-    n.dataset.mid === mid || (n.dataset.mids || "").split(",").indexOf(mid) >= 0);
+  const mk = out.querySelector('.mk[data-mid="' + mid + '"]') ||
+    [...out.querySelectorAll(".mk")].find(n => (n.dataset.mids || "").split(",").indexOf(mid) >= 0);
   const sec = $("mapsec");
-  if (!all.length || !sec) return;
+  if (!mk || !sec) return;
   sec.scrollIntoView({ behavior: "smooth", block: "start" });
   out.querySelectorAll(".mk.hot").forEach(n => n.classList.remove("hot"));
-  all.forEach(n => n.classList.add("hot"));
-  setTimeout(() => all.forEach(n => n.classList.remove("hot")), 2400);
+  mk.classList.add("hot");
+  setTimeout(() => mk.classList.remove("hot"), 2400);
 }
 function filterDay(chip){
   state.focusDay = chip;
   out.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.chip === chip));
-  out.querySelectorAll(".mk,.rt,.daylbl,.townlbl,.timelbl").forEach(n => {
+  out.querySelectorAll(".mk,.rt,.daylbl,.townlbl").forEach(n => {
     /* a merged place can belong to several days, so match against the list */
     const days = n.dataset.days ? n.dataset.days.split(",") : (n.dataset.day ? [n.dataset.day] : []);
     const on = chip === "all" || days.includes(chip);
