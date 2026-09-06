@@ -68,6 +68,41 @@ a{color:inherit}
 .saved{color:var(--ink)}
 .saved:not(:empty){margin-bottom:7px}
 .prog{position:fixed;left:0;top:0;height:2px;background:var(--mark);width:0;z-index:60;transition:width .2s}
+
+/* back to the top — laptop size by default, bigger where it is a thumb doing
+   the tapping, and always clear of the iPhone home indicator. z-index sits
+   under the lightbox so the lightbox simply covers it. */
+.totop{
+  position:fixed;z-index:70;right:26px;bottom:calc(26px + env(safe-area-inset-bottom, 0px));
+  width:42px;height:42px;border-radius:999px;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(243,243,241,.88);backdrop-filter:blur(10px);
+  border:1px solid var(--rule);color:var(--graphite);
+  opacity:0;visibility:hidden;pointer-events:none;transform:translateY(7px);
+  transition:opacity .22s,transform .22s,border-color .15s,background .15s;
+}
+.totop.on{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+.totop:hover{border-color:var(--ink);background:var(--paper)}
+.totop:active{transform:translateY(1px)}
+.totop svg{width:22px;height:22px;display:block}
+.totop svg path{fill:none;stroke:currentColor;stroke-width:1.5;stroke-opacity:.8;stroke-linecap:round;stroke-linejoin:round}
+/* tablet */
+@media (max-width:1024px){
+  .totop{width:48px;height:48px;right:22px;bottom:calc(22px + env(safe-area-inset-bottom, 0px))}
+  .totop svg{width:25px;height:25px}
+  .totop svg path{stroke-width:1.7}
+}
+/* phone */
+@media (max-width:640px){
+  .totop{width:52px;height:52px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom, 0px))}
+  .totop svg{width:27px;height:27px}
+  .totop svg path{stroke-width:1.8}
+}
+/* a coarse pointer means a finger, whatever the width says */
+@media (pointer:coarse){
+  .totop{width:52px;height:52px}
+  .totop svg{width:27px;height:27px}
+}
 .wordmark{font-family:var(--mono);font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute);margin:0 0 26px}
 .herolang{margin-top:22px}
 .bar .langbtn{padding:5px 11px}
@@ -89,14 +124,17 @@ a{color:inherit}
 .sheet{position:relative}
 .sketch{width:100%;height:auto;display:block}
 .sketch .coast path{fill:none;stroke:var(--graphite);stroke-opacity:.2;stroke-width:.9;stroke-linejoin:round;stroke-linecap:round}
-.sketch .pref path{fill:none;stroke:var(--graphite);stroke-opacity:.13;stroke-width:.7;stroke-linejoin:round;stroke-linecap:round}
-.sketch .preflbl{font-family:var(--mincho);font-size:12.5px;fill:var(--graphite);fill-opacity:.42;letter-spacing:.16em}
+/* dash-dot is what an administrative boundary looks like on a real map, and
+   it keeps the border from being mistaken for the coastline */
+.sketch .pref path{fill:none;stroke:var(--graphite);stroke-opacity:.34;stroke-width:.85;stroke-dasharray:7 3 1.5 3;stroke-linejoin:round;stroke-linecap:round}
+.sketch .preflbl{font-family:var(--mincho);font-size:12.5px;fill:var(--graphite);fill-opacity:.34;letter-spacing:.18em}
+.sketch .preflbl.on{font-size:14.5px;fill:var(--ink);fill-opacity:.6;letter-spacing:.2em;paint-order:stroke;stroke:var(--paper);stroke-width:3.6px;stroke-linejoin:round}
 .sketch .timelbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;fill:var(--ink);fill-opacity:.62;paint-order:stroke;stroke:var(--paper);stroke-width:3.2px;stroke-linejoin:round}
 .sheetlbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;color:var(--mute);margin:0 0 9px}
 .sheetlbl b{font-weight:400;color:var(--ink)}
 .sheets{display:block}
 .sheets .sheetwrap + .sheetwrap{margin-top:30px;padding-top:26px;border-top:1px dashed var(--rule)}
-.sketch .inset .land{fill:none;stroke:var(--graphite);stroke-opacity:.45;stroke-width:.7;stroke-linejoin:round}
+.sketch .inset .land{fill:none;stroke:var(--graphite);stroke-opacity:.58;stroke-width:.8;stroke-linejoin:round}
 .sketch .inset .pad{fill:var(--paper);opacity:.94}
 .sketch .inset .edge{fill:none;stroke:var(--graphite);stroke-opacity:.4;stroke-width:1}
 .sketch .inset .here{fill:var(--mark);fill-opacity:.85}
@@ -234,8 +272,9 @@ html[lang="en"] .note:empty::before{content:"Notes for this hour"}
   .sketch .frame{stroke-width:2.15}
   .sketch .deco{stroke-width:1.95}
   .sketch .lbl{font-size:17.5px}
-  .sketch .pref path{stroke-width:1.35}
+  .sketch .pref path{stroke-width:1.65;stroke-dasharray:13.5 6 3 6}
   .sketch .preflbl{font-size:24px}
+  .sketch .preflbl.on{font-size:28px;stroke-width:7px}
   .sketch .timelbl{font-size:18.5px;stroke-width:6.2px}
   .sketch .daylbl{font-size:24.5px;stroke-width:6.8px}
   .sketch .num{font-size:21.5px}
@@ -256,7 +295,7 @@ html[lang="en"] .note:empty::before{content:"Notes for this hour"}
   *{transition:none!important}
 }
 @media print{
-  .bar,.drop,.fine,.box,.chips{display:none!important}
+  .bar,.drop,.fine,.box,.chips,.totop{display:none!important}
   body{background:#fff}
   .day,.mapsec{page-break-inside:avoid}
 }
@@ -303,6 +342,8 @@ html[lang="en"] .note:empty::before{content:"Notes for this hour"}
   <button class="x" id="close">閉じる ESC</button>
   <div class="info" id="boxinfo"></div>
 </div>
+
+<button class="totop" id="totop" type="button"></button>
 
 <div class="toast" id="toast">
   <span id="toastmsg"></span>
@@ -577,7 +618,7 @@ const PREF = {"三重県":"Mie","京都府":"Kyoto","佐賀県":"Saga","兵庫�
 const STR = {
   ja: {
     app: "Fieldnotes",
-    other: "English",
+    other: "English", toTop: "先頭へ戻る",
     sep: " ・ ",
     lede: 'その日、何時に<br><em>どこにいたか</em>。',
     intro: "写真を置くと、EXIFの撮影時刻とジオタグを読んで、1日ずつのタイムラインと手描きの地図に組み立てます。撮った町の名前も、同梱した行政区域データで判定します。写真も位置情報もこの端末の中だけで処理され、どこにも送信されません。",
@@ -632,7 +673,7 @@ const STR = {
   },
   en: {
     app: "Fieldnotes",
-    other: "日本語",
+    other: "日本語", toTop: "Back to top",
     sep: " · ",
     lede: 'The day you had,<br><em>hour by hour</em>.',
     intro: "Drop your photos in. Fieldnotes reads the capture time and geotag out of each one and builds a day-by-day timeline and a hand-drawn map, naming the town every shot was taken in from boundary data bundled with the page. Your photos and their locations are handled entirely on this device and are never sent anywhere.",
@@ -721,6 +762,9 @@ function applyStatic(){
   $("close").textContent = t.close;
   $("undo").textContent = t.undo;
   document.querySelectorAll("[data-lang-btn]").forEach(b => { b.textContent = t.other; });
+  const up = $("totop");
+  up.setAttribute("aria-label", t.toTop);
+  up.setAttribute("title", t.toTop);
 }
 
 function setLang(l){
@@ -1109,7 +1153,7 @@ function mapHTML(days){
   for (const m of stops) m.stop = null;
 
   /* ---- one sheet ------------------------------------------------------- */
-  function sheet(sid, fitIn, wantInset, wantNumbers, timeLabels){
+  function sheet(sid, fitIn, wantInset, wantNumbers, timeLabels, trip, isDetail){
     /* On a phone the sheet turns portrait and everything on it grows: a
        1000-unit canvas squeezed into 370 CSS px renders 11px type at 4px. */
     const F = nar ? 1.95 : 1;
@@ -1236,6 +1280,7 @@ function mapHTML(days){
     }
 
     /* ---- the track ---- */
+    /* the places a day runs through, in order, without repeating in place */
     const chainOf = d => {
       const seq = [];
       for (const m of d.moments){
@@ -1243,18 +1288,64 @@ function mapHTML(days){
         const c = placeOf.get(m);
         if (!seq.length || seq[seq.length-1] !== c) seq.push(c);
       }
-      return seq.map(c => ({ x: c.x, y: c.y }));
+      return seq;
     };
-    days.forEach(d => {
-      const pts = chainOf(d);
-      if (pts.length > 1){
-        const r2 = rng(9000 + d.no * 31);
-        g += '<g class="rt" data-day="' + d.no + '">' +
-          '<path class="route" d="' + wobble(pts, r2, 4*F, 26*F) + '"/>' +
-          '<path class="route" style="stroke-opacity:.26" d="' + wobble(pts, r2, 5*F, 30*F) + '"/>' +
-          arrows(pts, 92*F, 5*F) +
-          '</g>';
+
+    /* A leg you walk twice used to be drawn once, so out-and-back looked like
+       a single line and the map could not say you had come back. Count every
+       leg first, then give each pass its own line a little to one side of the
+       true route — with its own arrows, which is what reads. */
+    const pIdx = new Map(places.map((c, i) => [c, i]));
+    const legKey = (a, b) => {
+      const ia = pIdx.get(a), ib = pIdx.get(b);
+      return ia < ib ? ia + ":" + ib : ib + ":" + ia;
+    };
+    const legTotal = new Map();
+    const chains = days.map(chainOf);
+    for (const seq of chains)
+      for (let i = 0; i + 1 < seq.length; i++){
+        const k = legKey(seq[i], seq[i+1]);
+        legTotal.set(k, (legTotal.get(k) || 0) + 1);
       }
+    const legSeen = new Map();
+    const legPts = (a, b) => {
+      const k = legKey(a, b), n = legTotal.get(k) || 1;
+      if (n < 2) return [{ x: a.x, y: a.y }, { x: b.x, y: b.y }];
+      const i = legSeen.get(k) || 0;
+      legSeen.set(k, i + 1);
+      const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1;
+      const off = (i - (n - 1) / 2) * Math.max(5, 10 - n) * F;
+      const nx = -dy / L * off, ny = dx / L * off;
+      return [{ x: a.x + nx, y: a.y + ny }, { x: b.x + nx, y: b.y + ny }];
+    };
+    /* sampled along the legs, not just at the stops — the long approach roads
+       are what the inset kept landing on */
+    const routePts = [];
+    const addRoute = pts => {
+      for (let i = 0; i < pts.length; i++){
+        routePts.push(pts[i]);
+        if (i + 1 >= pts.length) continue;
+        const a = pts[i], b = pts[i+1];
+        const n = Math.min(40, Math.floor(Math.hypot(b.x - a.x, b.y - a.y) / 25));
+        for (let k = 1; k < n; k++)
+          routePts.push({ x: a.x + (b.x - a.x) * k / n, y: a.y + (b.y - a.y) * k / n });
+      }
+    };
+    days.forEach((d, di) => {
+      const seq = chains[di];
+      if (seq.length < 2) return;
+      const r2 = rng(9000 + d.no * 31);
+      let leg = "";
+      for (let i = 0; i + 1 < seq.length; i++){
+        const pts = legPts(seq[i], seq[i+1]);
+        addRoute(pts);
+        const L = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+        leg += '<path class="route" d="' + wobble(pts, r2, 4*F, 26*F) + '"/>' +
+          '<path class="route" style="stroke-opacity:.26" d="' + wobble(pts, r2, 5*F, 30*F) + '"/>' +
+          /* every leg long enough to see gets at least one arrowhead */
+          (L > 22*F ? arrows(pts, Math.min(92*F, L), 5*F) : "");
+      }
+      g += '<g class="rt" data-day="' + d.no + '">' + leg + '</g>';
     });
     for (let i = 0; i < days.length - 1; i++){
       const a = [...days[i].moments].reverse().find(m => m.lat != null);
@@ -1318,6 +1409,42 @@ function mapHTML(days){
                    y: spot.y, w: dw, h: 15*F });
     });
 
+    /* The prefectures the route actually runs through, named where the route
+       is. Without this a Tokyo → Nagano run is a line across an empty sheet. */
+    const prefPut = (label, x, y, cls) => {
+      const w = label.length * (state.lang === "en" ? 8 : 14.5) * F;
+      const cands = [
+        { x, y },
+        { x, y: y - 30*F }, { x, y: y + 34*F },
+        { x: x - w/2 - 18*F, y }, { x: x + w/2 + 18*F, y },
+        { x, y: y - 54*F }, { x, y: y + 58*F }
+      ];
+      const q = cands.find(c =>
+        c.x - w/2 > 16*F && c.x + w/2 < MW - 16*F && c.y > 34*F && c.y < MH - 34*F &&
+        clear(c.x, c.y - 5*F, w/2 + 8*F, 15*F) && free(taken, c.x, c.y - 5*F, w/2 + 8*F, 15*F));
+      if (!q) return false;
+      taken.push({ x: q.x, y: q.y - 5*F, w, h: 20*F });
+      g += '<text class="' + cls + '" x="' + q.x.toFixed(1) + '" y="' + q.y.toFixed(1) +
+        '" text-anchor="middle">' + esc(label) + '</text>';
+      return true;
+    };
+    const prefDone = new Set();
+    {
+      const byPref = new Map();
+      for (const c of places){
+        if (!onSheet(c)) continue;
+        const p = prefOf(c.moments[0].lat, c.moments[0].lon);
+        if (!p) continue;
+        if (!byPref.has(p)) byPref.set(p, []);
+        byPref.get(p).push(c);
+      }
+      for (const [p, list] of byPref){
+        const mx = list.reduce((a, c) => a + c.x, 0) / list.length;
+        const my = list.reduce((a, c) => a + c.y, 0) / list.length;
+        if (prefPut(tp(p), mx, my, "preflbl on")) prefDone.add(p);
+      }
+    }
+
     /* Place names, one per town. On the close-up every stop is usually in the
        same municipality, so the rest fall back to the time you were there —
        which is what tells the day's story at that scale anyway. */
@@ -1360,16 +1487,12 @@ function mapHTML(days){
       }
     }
 
-    /* prefecture names — background orientation, so they take what is left */
+    /* the prefectures merely in view — background, so they take what is left */
     for (const [pname, plon, plat] of PREFL){
+      if (prefDone.has(pname)) continue;
       const x = ox + mlon(plon) * s, y = oy - merc(plat) * s;
       if (x < 40*F || x > MW - 40*F || y < 34*F || y > MH - 40*F) continue;
-      const label = tp(pname);
-      const w = label.length * (state.lang === "en" ? 8 : 13) * F;
-      if (!clear(x, y, w/2 + 6*F, 15*F) || !free(taken, x, y, w/2 + 6*F, 15*F)) continue;
-      taken.push({ x, y, w, h: 18*F });
-      g += '<text class="preflbl" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) +
-        '" text-anchor="middle">' + esc(label) + '</text>';
+      prefPut(tp(pname), x, y, "preflbl");
     }
 
     /* compass + scale bar, drawn by hand */
@@ -1394,7 +1517,7 @@ function mapHTML(days){
     /* 日本全図のインセット — この地図が日本のどこを写しているか */
     let insetSVG = "";
     if (wantInset){
-      const IW = nar ? 172 : 116, IH = IW * 1.293;
+      const IW = nar ? 186 : 142, IH = IW * 1.293;
       let best;
       if (nar){
         best = { x: MW - IW - 20, y: MH + 12 };
@@ -1412,6 +1535,7 @@ function mapHTML(days){
           let n = i * 0.1;
           for (const c of places) if (inBox(q, c.x, c.y)) n++;
           for (const t of taken) if (inBox(q, t.x, t.y)) n += 0.6;
+          for (const rp of routePts) if (inBox(q, rp.x, rp.y)) n += 0.5;
           if (n < bestN){ bestN = n; best = q; }
         });
       }
@@ -1435,20 +1559,24 @@ function mapHTML(days){
         if (n > 2) jd += '<path class="land" d="' + dd + '"/>';
       }
 
-      /* the trip's own extent, not just its middle */
-      const a1 = JXY(lonMin, latMin), a2 = JXY(lonMax, latMax);
-      const rx = Math.min(a1.x, a2.x), ry = Math.min(a1.y, a2.y);
-      const rw = Math.abs(a2.x - a1.x), rh = Math.abs(a2.y - a1.y);
-      const here = { x: rx + rw/2, y: ry + rh/2 };
+      /* the whole trip as a box, and — on a close-up — a dot for the piece of
+         it this sheet is showing */
+      const b1 = JXY(trip.loA, trip.laA), b2 = JXY(trip.loB, trip.laB);
+      const rx = Math.min(b1.x, b2.x), ry = Math.min(b1.y, b2.y);
+      const rw = Math.abs(b2.x - b1.x), rh = Math.abs(b2.y - b1.y);
+      const here = JXY((lonMin + lonMax) / 2, (latMin + latMax) / 2);
       const r3 = rng(4242);
+      const bigBox = Math.max(rw, rh) > 7;
       insetSVG = '<g class="inset" style="pointer-events:none">' +
         '<rect class="pad" x="' + ix.toFixed(1) + '" y="' + iy.toFixed(1) + '" width="' + IW.toFixed(1) + '" height="' + IH.toFixed(1) + '" rx="2"/>' +
         jd +
-        (Math.max(rw, rh) > 7
+        (bigBox
           ? '<rect class="herebox" x="' + (rx-2).toFixed(1) + '" y="' + (ry-2).toFixed(1) +
             '" width="' + (rw+4).toFixed(1) + '" height="' + (rh+4).toFixed(1) + '" rx="1.5"/>'
-          : '<circle class="here" cx="' + here.x.toFixed(1) + '" cy="' + here.y.toFixed(1) + '" r="3"/>' +
-            '<path class="herering" d="' + ring(here.x, here.y, 8.5, r3, 1.2) + '"/>') +
+          : '<path class="herering" d="' + ring(here.x, here.y, 8.5, r3, 1.2) + '"/>') +
+        ((isDetail || !bigBox)
+          ? '<circle class="here" cx="' + here.x.toFixed(1) + '" cy="' + here.y.toFixed(1) + '" r="' + (isDetail ? 2.6 : 3) + '"/>'
+          : "") +
         '<path class="edge" d="' + frame(ix, iy, IW, IH, r3) + '"/>' +
         '<text class="lbl" x="' + (ix + 9).toFixed(1) + '" y="' + (iy + (nar ? 24 : 15)).toFixed(1) + '">' + esc(tt.japan) + '</text>' +
         '</g>';
@@ -1473,8 +1601,13 @@ function mapHTML(days){
     return { html, places };
   }
 
-  const over = sheet("o", boxOf(stops), true, numbered, false);
-  const det = core ? sheet("d", core.fit, false, false, true) : null;
+  /* every sheet carries the same locator, so a close-up of an inland valley
+     still says which part of the country it is */
+  const tripFit = boxOf(stops);
+  const trip = { loA: tripFit.x0 / RAD, loB: tripFit.x1 / RAD,
+                 laA: unmerc(tripFit.y0), laB: unmerc(tripFit.y1) };
+  const over = sheet("o", tripFit, true, numbered, false, trip, false);
+  const det = core ? sheet("d", core.fit, true, false, true, trip, true) : null;
 
   const chips = '<button class="chip on" data-chip="all">' + esc(tt.allChip) + '</button>' +
     days.map(d => '<button class="chip" data-chip="' + d.no + '">' + esc(tt.dayNo(d.no)) + '</button>').join("");
@@ -1858,6 +1991,32 @@ $("title").addEventListener("input", saveMeta);
 document.querySelectorAll("[data-lang-btn]").forEach(b => {
   b.addEventListener("click", () => setLang(state.lang === "ja" ? "en" : "ja"));
 });
+
+/* ===================== back to top ===================== */
+{
+  const up = $("totop");
+  const r0 = rng(2468);
+  up.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true">' +
+    '<path d="' + wobble([{x:20, y:29},{x:20, y:12}], r0, 1.2, 7) + '"/>' +
+    '<path d="' + wobble([{x:13, y:19},{x:20, y:11},{x:27, y:19}], r0, 1.1, 7) + '"/>' +
+    '</svg>';
+  let queued = false;
+  const sync = () => {
+    queued = false;
+    up.classList.toggle("on", window.scrollY > 560);
+  };
+  addEventListener("scroll", () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(sync);
+  }, { passive: true });
+  up.addEventListener("click", () => {
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: still ? "auto" : "smooth" });
+    up.blur();
+  });
+  sync();
+}
 
 /* ===================== boot ===================== */
 state.lang = guessLang();
