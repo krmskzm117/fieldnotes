@@ -161,7 +161,10 @@ a{color:inherit}
 @keyframes ping{0%{opacity:.28}70%{opacity:.06}100%{opacity:.2}}
 .g-dim{opacity:.1;transition:opacity .25s}
 .g-lit{opacity:1;transition:opacity .25s}
-.mapcap{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;color:var(--mute);margin-top:12px;min-height:1.7em}
+.mapfoot{display:flex;align-items:flex-start;gap:20px;margin-top:12px;flex-wrap:wrap}
+.mapcap{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;color:var(--mute);flex:1 1 320px;min-width:0;min-height:1.7em}
+.mapfoot .btn{flex:0 0 auto}
+.mapfoot .btn[disabled]{opacity:.5;cursor:default}
 .mapcap b{font-weight:400;color:var(--ink)}
 
 /* ---------- day ---------- */
@@ -243,6 +246,12 @@ html[lang="en"] .note:empty::before{content:"Notes for this hour"}
 .unknown{padding:46px 0 20px}
 .unknown h3{font-family:var(--mincho);font-weight:400;font-size:19px;margin:0 0 6px}
 .unknown p{color:var(--mute);font-size:12.5px;margin:0 0 14px}
+.unknown .hint{color:var(--ink);font-size:12.5px;border-left:2px solid var(--rule);padding-left:12px;margin:0 0 16px}
+.filelist{list-style:none;margin:0 0 18px;padding:0;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--mute)}
+.filelist li{padding:3px 0;border-bottom:1px solid var(--rule);display:flex;gap:14px;flex-wrap:wrap}
+.filelist li:last-child{border-bottom:0}
+.filelist .nm{color:var(--ink);flex:1 1 240px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.filelist .why{flex:1 1 100%;color:#9C4A3C}
 
 /* ---------- lightbox ---------- */
 .box{position:fixed;inset:0;z-index:80;background:#101110;display:none;align-items:center;justify-content:center}
@@ -540,7 +549,9 @@ const idbClear = store => idb(store, "readwrite", os => wrap(os.clear()));
 
 function record(p){
   return {
-    key: p.key, name: p.name, time: p.time, known: p.known,
+    key: p.key, name: p.name, type: p.type || "", size: p.size || 0, why: p.why || "",
+    decoded: p.decoded !== false && p.thumbBlob != null,
+    time: p.time, known: p.known,
     lat: p.lat, lon: p.lon, town: p.town, alt: p.alt, dir: p.dir,
     cam: p.cam, lens: p.lens, focal: p.focal, fnum: p.fnum, exp: p.exp, iso: p.iso,
     thumbBlob: p.thumbBlob || null, viewBlob: p.viewBlob || null
@@ -595,6 +606,9 @@ async function restore(){
     state.seen.add(r.key);
     state.photos.push({
       id: ++uid, file: null, key: r.key, name: r.name,
+      type: r.type || "", size: r.size || 0, why: r.why || "",
+      /* records written before v8 carry no flag — a thumbnail is the proof */
+      decoded: r.decoded != null ? r.decoded : (r.thumbBlob != null),
       time: new Date(r.time), known: r.known,
       lat: r.lat ?? null, lon: r.lon ?? null, town: r.town || "",
       alt: r.alt ?? null, dir: r.dir ?? null,
@@ -619,6 +633,7 @@ const STR = {
   ja: {
     app: "Fieldnotes",
     other: "English", toTop: "先頭へ戻る",
+    saveImage: "画像に保存", saving: "書き出し中…", saveFailed: "書き出せませんでした",
     sep: " ・ ",
     lede: 'その日、何時に<br><em>どこにいたか</em>。',
     intro: "写真を置くと、EXIFの撮影時刻とジオタグを読んで、1日ずつのタイムラインと手描きの地図に組み立てます。撮った町の名前も、同梱した行政区域データで判定します。写真も位置情報もこの端末の中だけで処理され、どこにも送信されません。",
@@ -661,8 +676,16 @@ const STR = {
     delPhotoAt: t => t + "の写真を削除",
     photoAt: t => t + "の写真",
     shotAt: t => t + "に撮影した写真",
-    unknownH: "時刻が読めなかった写真",
-    unknownP: "撮影日時が入っていないため、ファイルの更新時刻を目安に並べています。",
+    unknownH: "撮影日時が入っていなかった写真",
+    unknownP: "写真は読めましたが撮影日時が入っていないため、ファイルの更新時刻を目安に並べています。地図には出ません。",
+    unreadH: "開けなかった写真",
+    unreadP: "ブラウザがこれらを画像として開けませんでした。写真は表示できません。撮影日時も読めなかったものは、地図とタイムラインにも出ていません。",
+    unreadHeic: "iPhoneの写真（HEIC）は、Safari以外のブラウザでは開けないことがあります。Safariで開き直すか、写真アプリで「JPEG」に変換してから読み込んでみてください。",
+    unreadCloud: "iCloud DriveやGoogleドライブの同期フォルダから直接ドラッグすると、端末に実体がなく開けないことがあります。一度ダウンロードしてから読み込んでください。",
+    unreadWhy: "ブラウザが返した理由をファイルごとに出しています。この文言をそのまま伝えてもらえれば原因を追えます。",
+    unreadRetry: "同じ写真をもう一度ドロップすると、読み込みをやり直します。",
+    removeThese: "これらを削除",
+    bytes: n => n < 1024 ? n + "B" : n < 1048576 ? (n/1024).toFixed(0) + "KB" : (n/1048576).toFixed(1) + "MB",
     est: " 推定",
     elev: m => "標高 " + m + "m",
     facing: (c, d) => c + "向き " + d + "°",
@@ -674,6 +697,7 @@ const STR = {
   en: {
     app: "Fieldnotes",
     other: "日本語", toTop: "Back to top",
+    saveImage: "Save as image", saving: "Rendering…", saveFailed: "Could not save",
     sep: " · ",
     lede: 'The day you had,<br><em>hour by hour</em>.',
     intro: "Drop your photos in. Fieldnotes reads the capture time and geotag out of each one and builds a day-by-day timeline and a hand-drawn map, naming the town every shot was taken in from boundary data bundled with the page. Your photos and their locations are handled entirely on this device and are never sent anywhere.",
@@ -720,7 +744,15 @@ const STR = {
     photoAt: t => "Photo taken at " + t,
     shotAt: t => "Photo taken at " + t,
     unknownH: "Photos with no capture time",
-    unknownP: "These carry no capture date, so they are ordered by the file's own timestamp.",
+    unknownP: "These opened fine but carry no capture date, so they are ordered by the file's own timestamp. They do not appear on the map.",
+    unreadH: "Photos this browser could not open",
+    unreadP: "The browser could not decode these as images, so there is no preview. Any that also had no readable capture time are missing from the map and the timeline as well.",
+    unreadHeic: "iPhone photos (HEIC) often will not open outside Safari. Try opening this page in Safari, or convert them to JPEG in the Photos app first.",
+    unreadCloud: "Files dragged straight out of a synced folder (iCloud Drive, Google Drive) may have no copy on the device yet. Download them first.",
+    unreadWhy: "The browser's own reason is shown against each file. Passing that line on is enough to trace the cause.",
+    unreadRetry: "Dropping the same photos in again will retry them.",
+    removeThese: "Remove these",
+    bytes: n => n < 1024 ? n + "B" : n < 1048576 ? (n/1024).toFixed(0) + "KB" : (n/1048576).toFixed(1) + "MB",
     est: " (est.)",
     elev: m => m + " m",
     facing: (c, d) => "facing " + c + " " + d + "°",
@@ -782,26 +814,67 @@ const $ = id => document.getElementById(id);
 const out = $("out"), hero = $("hero"), bar = $("bar"), prog = $("prog");
 
 /* ===================== intake ===================== */
+const errName = e => {
+  if (!e) return "unknown";
+  const n = e.name || "", m = e.message || "";
+  return (n + (m ? " — " + m : "") || String(e)).trim().slice(0, 120);
+};
+
+/* createImageBitmap and the <img> element are two different decoders in the
+   same browser, and they do not refuse the same files. Try the bitmap path
+   first — it is faster and honours the EXIF orientation — then the element,
+   which takes plenty that the first will not. Keep the reason either way. */
 async function renditions(file){
-  try{
-    let bmp;
-    try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); }
-    catch { bmp = await createImageBitmap(file); }
+  let src = null, revoke = null, why = "";
+
+  try { src = await createImageBitmap(file, { imageOrientation: "from-image" }); }
+  catch (e){ why = errName(e); }
+  if (!src){
+    try { src = await createImageBitmap(file); why = ""; }
+    catch (e){ why = why || errName(e); }
+  }
+  if (!src){
+    const url = URL.createObjectURL(file);
+    try {
+      const img = new Image();
+      await new Promise((res, rej) => {
+        img.onload = res;
+        img.onerror = () => rej(new Error("the <img> decoder refused it too"));
+        img.src = url;
+      });
+      if (img.decode){ try { await img.decode(); } catch {} }
+      src = img;
+      revoke = () => URL.revokeObjectURL(url);
+      why = "";
+    } catch (e){
+      URL.revokeObjectURL(url);
+      why = (why ? why + " · " : "") + errName(e);
+    }
+  }
+  if (!src) return { thumbBlob: null, viewBlob: null, why: why || "decode" };
+
+  try {
+    const W0 = src.width || src.naturalWidth, H0 = src.height || src.naturalHeight;
+    if (!W0 || !H0) return { thumbBlob: null, viewBlob: null, why: "decoded to zero size" };
     const draw = (edge, q) => {
-      const k = Math.min(1, edge / Math.max(bmp.width, bmp.height));
-      const w = Math.max(1, Math.round(bmp.width * k)), h = Math.max(1, Math.round(bmp.height * k));
+      const k = Math.min(1, edge / Math.max(W0, H0));
+      const w = Math.max(1, Math.round(W0 * k)), h = Math.max(1, Math.round(H0 * k));
       const cv = document.createElement("canvas");
       cv.width = w; cv.height = h;
-      cv.getContext("2d").drawImage(bmp, 0, 0, w, h);
+      cv.getContext("2d").drawImage(src, 0, 0, w, h);
       return new Promise(r => cv.toBlob(r, "image/jpeg", q));
     };
     const thumbBlob = await draw(480, 0.82);
     /* 元ファイルは保存しない（1枚数MBでは端末が保たない）。拡大表示に耐える
        長辺1400pxのコピーだけ残し、同じセッション中は元ファイルを優先する。 */
     const viewBlob = await draw(1400, 0.8);
-    bmp.close && bmp.close();
-    return { thumbBlob, viewBlob };
-  } catch { return { thumbBlob: null, viewBlob: null }; }
+    return { thumbBlob, viewBlob, why: thumbBlob ? "" : "the encoder returned nothing" };
+  } catch (e){
+    return { thumbBlob: null, viewBlob: null, why: errName(e) };
+  } finally {
+    if (src && src.close) src.close();
+    if (revoke) revoke();
+  }
 }
 
 async function ingest(files){
@@ -812,14 +885,28 @@ async function ingest(files){
 
   const one = async file => {
     const key = file.name + ":" + file.size + ":" + file.lastModified;
+    /* A photo that failed to decode was still written to the store, and its key
+       then blocked the same file from ever being offered again — so one bad
+       run stuck to that browser for good, while a private window was fine.
+       Drop the old record and let the file try again. */
+    const stale = state.photos.find(p => p.key === key && !p.decoded);
+    if (stale){
+      state.photos = state.photos.filter(p => p !== stale);
+      state.seen.delete(key);
+      idbDel("photos", key);
+    }
     if (!state.seen.has(key)){
       state.seen.add(key);
-      let ex = null;
-      try { ex = parseExif(await file.slice(0, 1024*1024).arrayBuffer()); } catch {}
+      let ex = null, exWhy = "";
+      try { ex = parseExif(await file.slice(0, 1024*1024).arrayBuffer()); }
+      catch (e){ exWhy = errName(e); }
       const plat = (ex && ex.lat) ?? null, plon = (ex && ex.lon) ?? null;
-      const { thumbBlob, viewBlob } = await renditions(file);
+      const rend = await renditions(file);
+      const { thumbBlob, viewBlob } = rend;
       const p = {
         id: ++uid, file, key, name: file.name,
+        type: file.type || "", size: file.size, decoded: !!thumbBlob,
+        why: [rend.why, exWhy ? "EXIF: " + exWhy : ""].filter(Boolean).join(" · "),
         time: (ex && ex.time) || new Date(file.lastModified),
         known: !!(ex && ex.time),
         lat: plat, lon: plon, town: townOf(plat, plon),
@@ -854,7 +941,10 @@ const SHOW_GAP = 45 * 60000;
 
 function build(){
   const known = state.photos.filter(p => p.known).sort((a,b) => a.time - b.time);
-  const unknown = state.photos.filter(p => !p.known).sort((a,b) => a.time - b.time);
+  /* two different failures: the file would not open at all, or it opened but
+     carries no capture time. Only the second belongs in the old section. */
+  const unreadable = state.photos.filter(p => !p.decoded).sort((a,b) => a.time - b.time);
+  const unknown = state.photos.filter(p => !p.known && p.decoded).sort((a,b) => a.time - b.time);
 
   const map = new Map();
   for (const p of known){
@@ -898,7 +988,7 @@ function build(){
     d.dist = dist;
     d.no = di + 1;
   });
-  return { days, unknown };
+  return { days, unknown, unreadable };
 }
 
 /* ===================== pencil primitives ===================== */
@@ -1633,8 +1723,173 @@ function mapHTML(days){
       tt.sep + tt.geotag(geoPhotos, state.photos.length)) + '</div>' +
     '<div class="chips">' + chips + '</div></div>' +
     sheets +
-    '<div class="mapcap" id="mapcap">' + esc(tt.mapCap(merged, stops.length, over.places.length)) + '</div>' +
+    '<div class="mapfoot">' +
+      '<div class="mapcap" id="mapcap">' + esc(tt.mapCap(merged, stops.length, over.places.length)) + '</div>' +
+      '<button class="btn ghost" id="saveimg" type="button">' + esc(tt.saveImage) + '</button>' +
+    '</div>' +
     '</section>';
+}
+
+/* ===================== 1枚に書き出す =====================
+   地図はDOMの中のSVGなので、そのまま画像にはならない。文書側のスタイルを
+   SVGの中に畳み込んでから焼き、見出しと数字をcanvasで書き足して1枚にする。
+   ここでも通信はしない — canvasもBlobも端末の中で完結する。 */
+
+function sketchCSS(){
+  const cs = getComputedStyle(document.documentElement);
+  const vars = ["--paper","--card","--ink","--mute","--rule","--mark","--mark-soft","--graphite","--mincho","--sans","--mono"]
+    .map(v => v + ":" + cs.getPropertyValue(v).trim()).join(";");
+  let css = ":root{" + vars + "}";
+  const want = /\.sketch|\.mk\b|\.g-dim|\.g-lit/;
+  const walk = list => {
+    for (const r of list){
+      if (r.type === CSSRule.MEDIA_RULE){
+        /* only the rules that apply at the width being looked at */
+        if (matchMedia(r.conditionText).matches) walk(r.cssRules);
+        continue;
+      }
+      const sel = r.selectorText || "";
+      if (want.test(sel)) css += sel + "{" + r.style.cssText + "}";
+    }
+  };
+  for (const sh of document.styleSheets){
+    let rules = null;
+    try { rules = sh.cssRules; } catch { continue; }
+    if (rules) walk(rules);
+  }
+  return css;
+}
+
+function svgToImage(svg, css){
+  const clone = svg.cloneNode(true);
+  const vb = svg.viewBox.baseVal;
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  clone.setAttribute("width", vb.width);
+  clone.setAttribute("height", vb.height);
+  const st = document.createElementNS("http://www.w3.org/2000/svg", "style");
+  st.textContent = css;
+  clone.insertBefore(st, clone.firstChild);
+  const xml = new XMLSerializer().serializeToString(clone);
+  const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res({ img, w: vb.width, h: vb.height });
+    img.onerror = () => rej(new Error("svg"));
+    img.src = url;
+  });
+}
+
+async function exportImage(){
+  const sec = $("mapsec");
+  if (!sec) return;
+  const btn = $("saveimg");
+  const t = T();
+  if (btn){ btn.disabled = true; btn.textContent = t.saving; }
+  prog.style.width = "20%";
+  try {
+    const css = sketchCSS();
+    const sheets = [];
+    for (const wrap of sec.querySelectorAll(".sheetwrap")){
+      const svg = wrap.querySelector("svg.sketch");
+      if (!svg) continue;
+      const lab = wrap.querySelector(".sheetlbl");
+      sheets.push({ label: lab ? lab.textContent.trim() : "", ...(await svgToImage(svg, css)) });
+    }
+    if (!sheets.length) return;
+    prog.style.width = "60%";
+
+    const cs = getComputedStyle(document.documentElement);
+    const paper = cs.getPropertyValue("--paper").trim() || "#F3F3F1";
+    const ink = cs.getPropertyValue("--ink").trim() || "#17181A";
+    const mute = cs.getPropertyValue("--mute").trim() || "#8B8D8A";
+    const rule = cs.getPropertyValue("--rule").trim() || "#D9D9D4";
+    const mincho = cs.getPropertyValue("--mincho").trim();
+    const mono = cs.getPropertyValue("--mono").trim();
+
+    const S = 2, W = 1160, PAD = 52;
+    const IW = W - PAD * 2;
+    const title = $("title").textContent.trim() || t.app;
+    const summary = [...document.querySelectorAll(".summary .cell")].map(c => {
+      const k = c.querySelector(".k"), v = c.querySelector(".v");
+      return (k ? k.textContent.trim() : "") + " " + (v ? v.textContent.trim() : "");
+    }).join("   ");
+
+    let H = PAD + 46 + 30;
+    for (const s of sheets) H += (s.label ? 26 : 0) + IW * s.h / s.w + 34;
+    H += 26 + PAD;
+
+    const cv = document.createElement("canvas");
+    cv.width = W * S; cv.height = Math.round(H) * S;
+    const c = cv.getContext("2d");
+    c.scale(S, S);
+    c.fillStyle = paper;
+    c.fillRect(0, 0, W, H);
+
+    /* a long title, or the English credit, must not run off the edge */
+    const put = (str, yy, size, family, min) => {
+      let px = size;
+      c.font = px + "px " + family;
+      while (px > min && c.measureText(str).width > IW){
+        px -= 0.5;
+        c.font = px + "px " + family;
+      }
+      c.fillText(str, PAD, yy);
+    };
+
+    let y = PAD + 30;
+    c.textBaseline = "alphabetic";
+    c.fillStyle = ink;
+    put(title, y, 30, mincho, 17);
+    y += 26;
+    c.fillStyle = mute;
+    put(summary, y, 12, mono, 9);
+    y += 30;
+
+    for (const s of sheets){
+      if (s.label){
+        c.fillStyle = mute;
+        put(s.label, y + 10, 11, mono, 8.5);
+        y += 26;
+      }
+      const h = IW * s.h / s.w;
+      c.drawImage(s.img, PAD, y, IW, h);
+      y += h + 34;
+    }
+
+    c.strokeStyle = rule;
+    c.lineWidth = 1;
+    c.beginPath(); c.moveTo(PAD, y - 14); c.lineTo(W - PAD, y - 14); c.stroke();
+    c.fillStyle = mute;
+    put(t.app + "  ·  " + t.credit, y + 6, 10, mono, 6.5);
+
+    prog.style.width = "90%";
+    const blob = await new Promise(r => cv.toBlob(r, "image/png"));
+    if (!blob) return;
+    const name = title.replace(/[\\/:*?"<>|]/g, "_").slice(0, 60) + ".png";
+    const file = new File([blob], name, { type: "image/png" });
+    /* on a phone this hands it straight to LINE or the camera roll */
+    if (navigator.canShare && navigator.canShare({ files: [file] })){
+      try { await navigator.share({ files: [file], title }); return; }
+      catch (e){ if (e && e.name === "AbortError") return; }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 8000);
+  } catch (e){
+    if (btn) btn.textContent = t.saveFailed;
+    setTimeout(() => { if (btn) btn.textContent = t.saveImage; }, 2600);
+    return;
+  } finally {
+    prog.style.width = "100%";
+    setTimeout(() => { prog.style.width = "0"; }, 400);
+    if (btn){ btn.disabled = false; if (btn.textContent === t.saving) btn.textContent = t.saveImage; }
+  }
 }
 
 /* ===================== render ===================== */
@@ -1652,7 +1907,7 @@ window.addEventListener("resize", () => {
 });
 
 function render(){
-  const { days, unknown } = build();
+  const { days, unknown, unreadable } = build();
   state.order = [];
   for (const d of days) for (const m of d.moments) for (const p of m.photos) state.order.push(p);
   for (const p of unknown) state.order.push(p);
@@ -1680,6 +1935,25 @@ function render(){
   }
   days.forEach(d => { html += dayHTML(d); });
   showSaved();
+
+  if (unreadable.length){
+    const t = T();
+    const heic = unreadable.some(p => /heic|heif/i.test(p.type || "") || /\.(heic|heif)$/i.test(p.name || ""));
+    const tiny = unreadable.some(p => (p.size || 0) < 4096);
+    const hint = heic ? t.unreadHeic : tiny ? t.unreadCloud : t.unreadWhy;
+    html += '<section class="unknown"><h3>' + esc(t.unreadH) + '</h3>' +
+      '<p>' + esc(t.unreadP) + '</p>' +
+      '<p class="hint">' + esc(hint) + '</p>' +
+      '<p>' + esc(t.unreadRetry) + '</p>' +
+      '<ul class="filelist">' + unreadable.map(p =>
+        '<li><span class="nm">' + esc(p.name || "?") + '</span>' +
+        '<span>' + esc(p.type || "—") + '</span>' +
+        '<span>' + esc(t.bytes(p.size || 0)) + '</span>' +
+        (p.why ? '<span class="why">' + esc(p.why) + '</span>' : "") + '</li>').join("") +
+      '</ul>' +
+      '<button class="btn ghost" data-killset="' + unreadable.map(p => p.id).join(",") + '">' +
+      esc(t.removeThese) + '</button></section>';
+  }
 
   if (unknown.length){
     html += '<section class="unknown"><h3>' + esc(T().unknownH) + '</h3>' +
@@ -1876,6 +2150,8 @@ function wire(){
   out.querySelectorAll(".chip").forEach(c => {
     c.addEventListener("click", () => filterDay(c.dataset.chip));
   });
+  const save = $("saveimg");
+  if (save) save.addEventListener("click", exportImage);
   out.querySelectorAll("[data-del]").forEach(b => {
     b.addEventListener("click", e => { e.stopPropagation(); removePhotos([+b.dataset.del], T().removed(1)); });
   });
